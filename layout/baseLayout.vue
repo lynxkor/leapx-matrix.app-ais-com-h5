@@ -1,6 +1,6 @@
 <template>
   <div class="base-container">
-    <header>
+    <header style="z-index: 5000">
       <van-nav-bar
         :title="globalStore.title"
         left-arrow
@@ -41,6 +41,8 @@
   }
   .vehstock-content{
     flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
   }
 </style>

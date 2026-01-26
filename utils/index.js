@@ -17,3 +17,28 @@ export function getNavigatorType () {
   }
   return ''
 }
+
+
+export function formatDate(date, type) {
+  const y = date.getFullYear()
+  const m = (date.getMonth() + 1).toString().padStart(2, '0')
+  const d = date.getDate().toString().padStart(2, '0')
+  const h = date.getHours().toString().padStart(2, '0')
+  const _m = date.getHours().toString().padStart(2, '0')
+  const s = date.getSeconds().toString().padStart(2, '0')
+  if (type === 'year') {
+    return [y]
+  } else if (type === 'month') {
+    return [y, m]
+  } else if (type === 'day') {
+    return [y, m ,d]
+  } else if (type === 'hour') {
+    return [h, _m]
+  } else if (type === 'minute') {
+    return [h, _m]
+  }else if (type === 'second') {
+    return [h, _m ,s]
+  } else {
+    return []
+  }
+}
