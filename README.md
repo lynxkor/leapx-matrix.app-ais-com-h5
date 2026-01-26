@@ -2,4 +2,4 @@
 develop分支修改
 
 ## 使用文档地址
-[wiki](https://wiki-intra.leapmotor.com/pages/viewpage.action?pageId=111946343).
+[业务组件使用说明文档](https://wiki-intra.leapmotor.com/pages/viewpage.action?pageId=111946343).
