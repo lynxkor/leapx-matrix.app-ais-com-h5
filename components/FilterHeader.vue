@@ -149,13 +149,6 @@
         return []
       }
     },
-    route: {
-      type: String
-    },
-    tempVin: {
-      type: String,
-      default: ''
-    },
     showScan: {
       type: Boolean,
       default: true
