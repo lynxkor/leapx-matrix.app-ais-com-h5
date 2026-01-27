@@ -17,17 +17,17 @@
       <RouterView/>
     </div>
   </div>
-  
+
 </template>
 
 <script setup lang="ts">
-  import { RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 
-  import { useGlobalStore } from '@/stores/global'
-  import { goBack } from '../utils/app'
+import { useGlobalStore } from '@/stores/global'
+import { goBack } from '../utils/app'
 
-  const globalStore = useGlobalStore()
-  
+const globalStore = useGlobalStore()
+
 </script>
 
 <style lang="scss" scoped>
@@ -46,4 +46,3 @@
     overflow-y: auto;
   }
 </style>
-  

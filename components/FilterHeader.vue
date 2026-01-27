@@ -10,7 +10,7 @@
               <img class="toggle-icon" :src="sortOrder ? sortDownIcon : sortUpIcon"/>
               <span class="toggle-span">按照日期{{ sortOrder ? '升序' : '降序' }}</span>
           </div>
-          <img v-show="!isInput && searchList.length" 
+          <img v-show="!isInput && searchList.length"
             :class="highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'" :src="highlightSerchIcon ? moreIconHl : moreIcon" @click="showPannel"/>
       </div>
       <van-popup position="top" v-model:show="popupShow" class="top-pop" :class="topupClass">
@@ -54,9 +54,9 @@
                                 </p>
                                 <p :class="searchForm[item.key] && item.list && !item.list.map(item => item.value).includes(searchForm[item.key]) ? 'option-text user-icon active-option-text' : 'option-text user-icon'"
                                   @click="showPick(item)">
-                                    {{ 
+                                    {{
                                       choiceDic[item.key] == '自选' ?
-                                      '自选' : 
+                                      '自选' :
                                       choiceDic[item.key][0].join('/') + '~' + choiceDic[item.key][1].join('/')
                                       }}
                                 </p>
@@ -71,9 +71,9 @@
                                 <p :class="searchForm[item.key] && item.list && !item.list.map(item => item.value).includes(searchForm[item.key]) ? 'option-text user-icon active-option-text' : 'option-text user-icon'"
                                   @click="showPick(item)">
                                     <!-- {{ choiceDic[item.key] }} -->
-                                    {{ 
+                                    {{
                                       choiceDic[item.key] == '自选' ?
-                                      '自选' : 
+                                      '自选' :
                                       choiceDic[item.key][0].join(':') + '~' + choiceDic[item.key][1].join(':')
                                     }}
                                 </p>
@@ -127,292 +127,292 @@
 </template>
 
 <script setup>
-  import { ref, defineProps, reactive, watch, onMounted, defineEmits, onBeforeUpdate } from 'vue'
-  import { getNavigatorType, formatDate } from '../utils/index'
-  const navigatorType = getNavigatorType()
-  const emit = defineEmits(['search', 'filterSearch', 'scanCb'])
-  import { toScan } from '../utils/nativeFn'
+import { ref, defineProps, reactive, watch, onMounted, defineEmits, onBeforeUpdate } from 'vue'
+import { getNavigatorType, formatDate } from '../utils/index'
+const navigatorType = getNavigatorType()
+const emit = defineEmits(['search', 'filterSearch', 'scanCb'])
+import { toScan } from '../utils/nativeFn'
 
-  import sortDownIcon from '../assets/image/sort_down_icon.svg'
-  import sortUpIcon from '../assets/image/sort_up_icon.svg'
-  import moreIcon from '../assets/image/more_condition_icon.png'
-  import moreIconHl from '../assets/image/more_condition_icon_highlight.png'
+import sortDownIcon from '../assets/image/sort_down_icon.svg'
+import sortUpIcon from '../assets/image/sort_up_icon.svg'
+import moreIcon from '../assets/image/more_condition_icon.png'
+import moreIconHl from '../assets/image/more_condition_icon_highlight.png'
 
-  const props = defineProps({
-    placeholder: {
-      type: String,
-      default: ''
-    },
-    searchList: {
-      type: Array,
-      default: () => {
-        return []
+const props = defineProps({
+  placeholder: {
+    type: String,
+    default: ''
+  },
+  searchList: {
+    type: Array,
+    default: () => {
+      return []
+    }
+  },
+  showScan: {
+    type: Boolean,
+    default: true
+  },
+  showSort: {
+    type: Boolean,
+    default: true
+  },
+  isHeaderClick: {
+    type: Boolean,
+    default: true
+  }
+})
+
+watch(
+  () => props.isHeaderClick,
+  (newVal) => {
+    isHeaderScan.value = !newVal
+  }
+)
+
+const teleportEle = ref(null)
+const searchValue = ref('')
+const sortOrder = ref(false)
+const isInput = ref(false)
+const popupShow = ref(false)
+const activeIndex = ref(0)
+const searchForm = reactive({})
+const topupClass = ref(navigatorType === 'Android' ? 'topup-android' : 'topup-ios')
+const isHeaderScan = ref(props.isHeaderClick)
+const multipleList = ref([])
+const choiceDic = reactive({})
+const tempTime = reactive({
+  selectType: 'start',
+  startTime: [],
+  endTime: []
+})
+const pickVisible = ref(false)
+const highlightSerchIcon = ref(false)
+
+const itemRefs = ref([])
+const optionRefView = (el) => {
+  if (el) {
+    itemRefs.value.push(el)
+  }
+}
+
+onBeforeUpdate(() => {
+  itemRefs.value = []
+})
+
+const dateTimeFilter = (_arr, type) => {
+  if (type === 'year' || type === 'month' || type === 'day') {
+    return _arr.join('/')
+  } else if (type === 'hour' || type === 'minute' || type === 'second') {
+    return _arr.join(':')
+  }
+}
+
+onMounted(() => {
+  teleportEle.value = document.getElementById('test_content')
+
+  if (props.searchList && props.searchList.length > 0) {
+    setSearchForm()
+  }
+
+  window.getScanResult = (res) => {
+    if (res) {
+      let _scanValue = JSON.parse(res)[0]
+      if (_scanValue.endsWith('-A')) {
+        _scanValue = _scanValue.replaceAll('-A', '')
+      } else if (_scanValue.endsWith('-B')) {
+        _scanValue = _scanValue.replaceAll('-B', '')
       }
-    },
-    showScan: {
-      type: Boolean,
-      default: true
-    },
-    showSort: {
-      type: Boolean,
-      default: true
-    },
-    isHeaderClick: {
-      type: Boolean,
-      default: true
-    }
-  })
-
-  watch(
-    () => props.isHeaderClick,
-    (newVal) => {
-      isHeaderScan.value = !newVal
-    },
-  )
-  
-  const teleportEle = ref(null)
-  const searchValue = ref('')
-  const sortOrder = ref(false)
-  const isInput = ref(false)
-  const popupShow = ref(false)  
-  const activeIndex = ref(0)
-  const searchForm = reactive({})
-  const topupClass = ref(navigatorType === 'Android' ? 'topup-android' : 'topup-ios')
-  const isHeaderScan = ref(props.isHeaderClick)
-  const multipleList = ref([])
-  const choiceDic = reactive({})
-  let tempTime = reactive({
-    selectType: 'start',
-    startTime: [],
-    endTime: []
-  })
-  const pickVisible = ref(false)
-  const highlightSerchIcon = ref(false)
-
-  const itemRefs = ref([])
-  const optionRefView = (el) => {
-    if (el) {
-      itemRefs.value.push(el)
+      if (!isHeaderScan.value) {
+        // 父组件的操作扫码
+        // 传出去结果
+        emit('scanCb', _scanValue)
+      } else {
+        // 头部的输入框扫码
+        searchValue.value = _scanValue
+        searchEvent(searchValue)
+      }
     }
   }
+})
 
-  onBeforeUpdate(() => {
-    itemRefs.value = []
-  })
-
-  const dateTimeFilter = (_arr, type) => {
-    if (type === 'year' || type === 'month' || type === 'day') {
-      return _arr.join('/')
-    } else if (type === 'hour' || type === 'minute' || type === 'second') {
-      return _arr.join(':')
+const setSearchForm = () => {
+  props.searchList.forEach(item => {
+    let value
+    if (item.nodeType === 'single') {
+      value = item.default ? item.default : ''
+    } else if (item.nodeType === 'multiple') {
+      value = item.default ? item.default : []
+      multipleList.value.push(item.key)
+    } else if (item.nodeType === 'year' || item.nodeType === 'month' || item.nodeType === 'day') {
+      if (Array.isArray(item.default) && item.default.length) {
+        value = item.default
+        const _arr = [...value]
+        choiceDic[item.key] = _arr
+      } else {
+        value = item.default
+        choiceDic[item.key] = '自选'
+      }
+    } else if (item.nodeType === 'hour' || item.nodeType === 'minute' || item.nodeType === 'second') {
+      if (Array.isArray(item.default) && item.default.length) {
+        value = item.default
+        const _arr = [...value]
+        choiceDic[item.key] = _arr
+      } else {
+        value = item.default
+        choiceDic[item.key] = '自选'
+      }
     }
-  }
+    searchForm[item.key] = value
+  })
+}
 
-  onMounted(() => {
-    teleportEle.value = document.getElementById('test_content')
-
-    if (props.searchList && props.searchList.length > 0) {
+watch(
+  () => props.searchList,
+  (newSearchList) => {
+    if (newSearchList && newSearchList.length > 0) {
       setSearchForm()
     }
+  },
+  { immediate: true }
+)
 
-    window.getScanResult = (res) => {
-      if (res) {
-        let _scanValue = JSON.parse(res)[0]
-        if (_scanValue.endsWith('-A')) {
-          _scanValue = _scanValue.replaceAll('-A', '')
-        } else if (_scanValue.endsWith('-B')) {
-          _scanValue = _scanValue.replaceAll('-B', '')
-        }
-        if (!isHeaderScan.value) {
-          // 父组件的操作扫码
-          // 传出去结果
-          emit('scanCb', _scanValue)
-        } else {
-          // 头部的输入框扫码
-          searchValue.value = _scanValue
-          searchEvent(searchValue)
-        }
-      }
+const focusEvent = () => {
+  isInput.value = true
+}
+
+const blurEvent = () => {
+  isInput.value = false
+}
+
+const searchEvent = (e) => {
+  emit('search', {
+    sortOrder: sortOrder.value,
+    searchValue: e
+  })
+}
+
+const scanClick = () => {
+  isHeaderScan.value = true
+  // 1vin码 2钥匙 3合格证
+  toScan()
+}
+
+const toggleSort = () => {
+  // 切换状态然后再调接口
+  sortOrder.value = !sortOrder.value
+  emit('search', {
+    sortOrder: sortOrder.value,
+    searchValue: searchValue
+  })
+}
+
+const showPannel = () => {
+  popupShow.value = true
+}
+
+const hidePannel = () => {
+  popupShow.value = false
+}
+
+const toggleActiveIndex = (_index) => {
+  if (activeIndex.value !== _index) {
+    activeIndex.value = _index
+    // 左边点击，右边对应区块上滑
+    itemRefs.value[_index].scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
+
+const toggleOptionValue = (_key, _value, _type) => {
+  if (_type === 'single') {
+    if (searchForm[_key] !== _value) {
+      searchForm[_key] = _value
+    }
+  } else if (_type === 'multiple') {
+    let arr = searchForm[_key] || []
+    if (Array.isArray(arr) && arr.includes(_value)) {
+      arr = arr.filter(item => item !== _value)
+    } else {
+      arr.push(_value)
+    }
+    searchForm[_key] = arr
+  } else if (_type === 'year' || _type === 'month' || _type === 'day') {
+    if (searchForm[_key] !== _value) {
+      searchForm[_key] = _value
+      choiceDic[_key] = '自选'
+    }
+  }
+}
+
+const clearClick = () => {
+  Object.keys(searchForm).map(item => {
+    if (multipleList.value.includes(item)) {
+      searchForm[item] = []
+    } else {
+      searchForm[item] = ''
     }
   })
+  Object.keys(choiceDic).map(item => {
+    choiceDic[item] = '自选'
+  })
+  highlightSerchIcon.value = false
+}
 
-  const setSearchForm = () => {
-    props.searchList.forEach(item => {
-      let value
-      if (item.nodeType === 'single') {
-          value = item.default ? item.default : ''
-      } else if (item.nodeType === 'multiple') {
-          value = item.default ? item.default : []
-          multipleList.value.push(item.key)
-      } else if (item.nodeType === 'year' || item.nodeType === 'month' || item.nodeType === 'day') {
-        if (Array.isArray(item.default) && item.default.length) {
-          value = item.default
-          const _arr = [...value]
-          choiceDic[item.key] = _arr
-        } else {
-          value = item.default
-          choiceDic[item.key] = '自选'
-        }
-      } else if (item.nodeType === 'hour' || item.nodeType === 'minute' || item.nodeType === 'second') {
-        if (Array.isArray(item.default) && item.default.length) {
-          value = item.default
-          const _arr = [...value]
-          choiceDic[item.key] = _arr
-        } else {
-          value = item.default
-          choiceDic[item.key] = '自选'
-        }
-      }
-      searchForm[item.key] = value
+const filterClick = () => {
+  emit('filterSearch', searchForm)
+  hidePannel()
+  highlightSerchIcon.value = true
+}
+
+const showPick = (item) => {
+  const key = item.key
+  const type = item.nodeType
+  const columnsType = item.columnsType
+  if (type === 'year' || type === 'month' || type === 'day') {
+    const now = new Date()
+    const thirtyDaysBefore = new Date(new Date().valueOf() - 30 * 24 * 60 * 60 * 1000)
+    Object.assign(tempTime, {
+      key,
+      type,
+      selectType: 'start',
+      columnsType,
+      startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(thirtyDaysBefore, type),
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
+    })
+  } else if (type === 'hour' || type === 'minute' || type === 'second') {
+    const now = new Date()
+    Object.assign(tempTime, {
+      key,
+      type,
+      selectType: 'start',
+      columnsType,
+      startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(now, type),
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
     })
   }
+  pickVisible.value = true
+}
 
-  watch(
-    () => props.searchList,
-    (newSearchList) => {
-      if (newSearchList && newSearchList.length > 0) {
-        setSearchForm()
-      }
-    },
-    { immediate: true }
-  )
-
-  const focusEvent = () => {
-    isInput.value = true
+const timeItemClick = (type) => {
+  console.log(type)
+  if (tempTime.selectType !== type) {
+    tempTime.selectType = type
+    console.log(tempTime)
   }
+}
 
-  const blurEvent = () => {
-    isInput.value = false
+const pickClick = () => {
+  const { startTime, endTime } = tempTime
+  if (startTime.valueOf() > endTime.valueOf()) {
+    const middleTime = startTime
+    tempTime.startTime = tempTime.endTime
+    tempTime.endTime = middleTime
   }
+  pickVisible.value = false
+  searchForm[tempTime.key] = [tempTime.startTime, tempTime.endTime]
+  choiceDic[tempTime.key] = [tempTime.startTime, tempTime.endTime]
+}
 
-  const searchEvent = (e) => {
-    emit('search', {
-      sortOrder: sortOrder.value,
-      searchValue: e
-    })
-  }
-
-  const scanClick = () => {
-    isHeaderScan.value = true
-    // 1vin码 2钥匙 3合格证
-    toScan()
-  }
-
-  const toggleSort = () => {
-    // 切换状态然后再调接口
-    sortOrder.value = !sortOrder.value
-    emit('search', {
-        sortOrder: sortOrder.value,
-        searchValue: searchValue
-    })
-  }
-
-  const showPannel = () => {
-    popupShow.value = true
-  }
-
-  const hidePannel = () => {
-    popupShow.value = false
-  }
-
-  const toggleActiveIndex = (_index) => {
-    if (activeIndex.value !== _index) {
-        activeIndex.value = _index
-        // 左边点击，右边对应区块上滑
-        itemRefs.value[_index].scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
-  const toggleOptionValue = (_key, _value, _type) => {
-    if (_type === 'single') {
-      if (searchForm[_key] !== _value) {
-        searchForm[_key] = _value
-      }
-    } else if (_type === 'multiple') {
-      let arr = searchForm[_key] || []
-      if (Array.isArray(arr) && arr.includes(_value)) {
-          arr = arr.filter(item => item !== _value)
-      } else {
-          arr.push(_value)
-      }
-      searchForm[_key] = arr
-    } else if (_type === 'year' || _type === 'month' || _type === 'day') {
-      if (searchForm[_key] !== _value) {
-        searchForm[_key] = _value
-        choiceDic[_key] = '自选'
-      }
-    }
-  }
-
-  const clearClick = () => {
-    Object.keys(searchForm).map(item => {
-      if (multipleList.value.includes(item)) {
-          searchForm[item] = []
-      } else {
-          searchForm[item] = ''
-      }
-    })
-    Object.keys(choiceDic).map(item => {
-      choiceDic[item] = '自选'
-    })
-    highlightSerchIcon.value = false
-  }
-
-  const filterClick = () => {
-    emit('filterSearch', searchForm)
-    hidePannel()
-    highlightSerchIcon.value = true
-  }
-
-  const showPick = (item) => { 
-    const key = item.key
-    const type = item.nodeType
-    const columnsType = item.columnsType
-    if (type === 'year' || type === 'month' || type === 'day') {
-      const now = new Date()
-      const thirtyDaysBefore = new Date(new Date().valueOf() - 30 * 24 * 60 * 60 * 1000)
-      Object.assign(tempTime, {
-        key,
-        type,
-        selectType: 'start',
-        columnsType,
-        startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(thirtyDaysBefore, type),
-        endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
-      })
-    } else if (type === 'hour' || type === 'minute' || type === 'second') {
-      const now = new Date()
-       Object.assign(tempTime, {
-        key,
-        type,
-        selectType: 'start',
-        columnsType,
-        startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(now, type),
-        endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
-      })
-    }
-    pickVisible.value = true
-  }
-
-  const timeItemClick = (type) => {
-    console.log(type)
-    if (tempTime.selectType !== type) {
-      tempTime.selectType = type
-      console.log(tempTime)
-    }
-  }
-
-  const pickClick = () => {
-    let { startTime, endTime } = tempTime
-    if (startTime.valueOf() > endTime.valueOf()) {
-        let middleTime = startTime
-        tempTime.startTime = tempTime.endTime
-        tempTime.endTime = middleTime
-    }
-    pickVisible.value = false
-    searchForm[tempTime.key] = [tempTime.startTime, tempTime.endTime]
-    choiceDic[tempTime.key] = [tempTime.startTime, tempTime.endTime]
-  }
-    
 </script>
 
 <style lang="scss" scoped>

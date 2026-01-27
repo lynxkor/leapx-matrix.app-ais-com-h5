@@ -31,13 +31,13 @@ export function formatDate(date, type) {
   } else if (type === 'month') {
     return [y, m]
   } else if (type === 'day') {
-    return [y, m ,d]
+    return [y, m, d]
   } else if (type === 'hour') {
     return [h, _m]
   } else if (type === 'minute') {
     return [h, _m]
-  }else if (type === 'second') {
-    return [h, _m ,s]
+  } else if (type === 'second') {
+    return [h, _m, s]
   } else {
     return []
   }
