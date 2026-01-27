@@ -13,7 +13,7 @@
         </template>
       </van-nav-bar>
     </header>
-    <div class="vehstock-content">
+    <div class="layout-content">
       <RouterView/>
     </div>
   </div>
@@ -39,7 +39,7 @@
     flex-direction: column;
     overflow: hidden;
   }
-  .vehstock-content{
+  .layout-content{
     flex: 1;
     display: flex;
     flex-direction: column;
