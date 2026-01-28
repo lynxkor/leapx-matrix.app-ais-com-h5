@@ -40,7 +40,7 @@
                               <template v-if="item.nodeType === 'multiple'">
                                   <p v-for="(optionItem, optionIndex) in item.options" :key="optionIndex"
                                       :class="searchForm[item.key] && Array.isArray(searchForm[item.key]) && searchForm[item.key].includes(optionItem.value) ? 'option-text active-option-text' : 'option-text'"
-                                      @click="toggleOptionValue(item.key, optionItem.value, item.nodeType)"
+                                      @click="toggleOptionValue(item.key, optionItem.value, item.nodeType, item.callBack, item.resetDic)"
                                   >
                                       {{ optionItem.label }}
                                   </p>
@@ -70,7 +70,6 @@
                                 </p>
                                 <p :class="searchForm[item.key] && item.list && !item.list.map(item => item.value).includes(searchForm[item.key]) ? 'option-text user-icon active-option-text' : 'option-text user-icon'"
                                   @click="showPick(item)">
-                                    <!-- {{ choiceDic[item.key] }} -->
                                     {{
                                       choiceDic[item.key] == '自选' ?
                                       '自选' :
@@ -170,7 +169,6 @@ watch(
   }
 )
 
-const teleportEle = ref(null)
 const searchValue = ref('')
 const sortOrder = ref(false)
 const isInput = ref(false)
@@ -209,8 +207,6 @@ const dateTimeFilter = (_arr, type) => {
 }
 
 onMounted(() => {
-  teleportEle.value = document.getElementById('test_content')
-
   if (props.searchList && props.searchList.length > 0) {
     setSearchForm()
   }
@@ -323,19 +319,37 @@ const toggleActiveIndex = (_index) => {
   }
 }
 
-const toggleOptionValue = (_key, _value, _type) => {
+const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
   if (_type === 'single') {
     if (searchForm[_key] !== _value) {
       searchForm[_key] = _value
     }
   } else if (_type === 'multiple') {
-    let arr = searchForm[_key] || []
+    let arr = searchForm[_key]
     if (Array.isArray(arr) && arr.includes(_value)) {
       arr = arr.filter(item => item !== _value)
     } else {
       arr.push(_value)
     }
     searchForm[_key] = arr
+    if (_callBack) {
+      _callBack(arr)
+    }
+    if (_resetDic) {
+      Object.keys(_resetDic).map(_resetKey => {
+        // 创建深拷贝以避免引用共享问题
+        if (typeof _resetDic[_resetKey] === 'object' && _resetDic[_resetKey] !== null) {
+          if (Array.isArray(_resetDic[_resetKey])) {
+            searchForm[_resetKey] = [..._resetDic[_resetKey]]
+          } else {
+            searchForm[_resetKey] = { ..._resetDic[_resetKey] }
+          }
+        } else {
+          searchForm[_resetKey] = _resetDic[_resetKey]
+        }
+      })
+    }
+    console.log(searchForm)
   } else if (_type === 'year' || _type === 'month' || _type === 'day') {
     if (searchForm[_key] !== _value) {
       searchForm[_key] = _value
