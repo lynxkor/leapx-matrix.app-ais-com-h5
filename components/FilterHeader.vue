@@ -349,7 +349,6 @@ const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
         }
       })
     }
-    console.log(searchForm)
   } else if (_type === 'year' || _type === 'month' || _type === 'day') {
     if (searchForm[_key] !== _value) {
       searchForm[_key] = _value
