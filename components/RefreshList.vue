@@ -61,13 +61,6 @@ const onLoad = () => {
 </script>
 
 <style lang="scss">
-  .pull-refresh-content{
-    height: 100%;
-  }
-  .van-list-content{
-    height: 100%;
-    overflow-y: auto
-  }
   .slot-content{
     width: 94vw;
     margin: 0 auto;
