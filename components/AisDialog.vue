@@ -1,8 +1,9 @@
 <template>
   <van-dialog v-model:show="isShow" :title="dialogObj.title">
     <template #default>
-      <div v-if="dialogObj.default" class="dialog-content" v-html="dialogObj.default"></div>
-      <slot v-else></slot>
+      <div class="dialog-content">
+        <slot></slot>
+      </div>
     </template>
     <template #footer v-if="dialogObj.submitText">
       <div class="dialog-footer">
