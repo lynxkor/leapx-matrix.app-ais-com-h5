@@ -14,19 +14,34 @@
       </van-nav-bar>
     </header>
     <div class="layout-content">
-      <RouterView/>
+      <RouterView #default="{ Component, route }">
+        <KeepAlive :include="keepAliveRouteNames">
+          <component :is="Component" :key="route.name" />
+        </KeepAlive>
+        <component v-if="!route.meta?.keepAlive" :is="Component" :key="route.name" />
+      </RouterView>
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
 
 import { useGlobalStore } from '@/stores/global'
 import { goBack } from '../utils/app'
 
 const globalStore = useGlobalStore()
+
+const router = useRouter()
+const keepAliveRouteNames = computed(() => {
+  return router.getRoutes()
+    .filter(route => route.meta?.keepAlive && route.name)
+    .map(route => route.name)
+})
+// const keepAliveRouteNames = ['PdiListView']
+console.log('keep', keepAliveRouteNames)
 
 </script>
 
