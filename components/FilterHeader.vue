@@ -3,7 +3,7 @@
       <div class="search-content">
           <form action="/" class="search-input">
               <van-search shape="round" v-model="searchValue" :placeholder="placeholder"
-              @focus="focusEvent" @blur="blurEvent" @search="searchEvent"/>
+              @focus="focusEvent" @blur="blurEvent" @search="searchEvent" :clearable="false"/>
               <img class="scan-icon" v-if="showScan" src="../assets/image/scan_icon.png" @click="scanClick"/>
           </form>
           <div class="toggle-content" v-show="!isInput && showSort" @click="toggleSort">
