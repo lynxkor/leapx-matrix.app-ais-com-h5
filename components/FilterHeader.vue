@@ -52,11 +52,11 @@
                                     @click="toggleOptionValue(item.key, optionItem.value, item.nodeType)">
                                     {{ optionItem.label }}
                                 </p>
-                                <p :class="searchForm[item.key] && item.list && !item.list.map(item => item.value).includes(searchForm[item.key]) ? 'option-text user-icon active-option-text' : 'option-text user-icon'"
+                                <p :class="searchForm[item.key] && searchForm[item.key].length && item.list && !item.list.map(item => item.value).includes(searchForm[item.key]) ? 'option-text user-icon active-option-text' : 'option-text user-icon'"
                                   @click="showPick(item)">
                                     {{
                                       choiceDic[item.key] == '自选' ?
-                                      '自选' :
+                                      '请选择时间' :
                                       choiceDic[item.key][0].join('/') + '~' + choiceDic[item.key][1].join('/')
                                       }}
                                 </p>
@@ -68,7 +68,7 @@
                                     @click="toggleOptionValue(item.key, optionItem.value, item.nodeType)">
                                     {{ optionItem.label }}
                                 </p>
-                                <p :class="searchForm[item.key] && item.list && !item.list.map(item => item.value).includes(searchForm[item.key]) ? 'option-text user-icon active-option-text' : 'option-text user-icon'"
+                                <p :class="searchForm[item.key] && searchForm[item.key].length && item.list && !item.list.map(item => item.value).includes(searchForm[item.key]) ? 'option-text user-icon active-option-text' : 'option-text user-icon'"
                                   @click="showPick(item)">
                                     {{
                                       choiceDic[item.key] == '自选' ?
@@ -584,7 +584,7 @@ const pickClick = () => {
                         }
                     }
                     .user-icon{
-                        flex: 0 0 100%;
+                        // flex: 0 0 100%;
                     }
                     .active-option-text{
                         border: 1px solid #00aa00;

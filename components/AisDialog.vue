@@ -35,7 +35,8 @@ watch(
   () => props.showDialog,
   newVal => {
     isShow.value = newVal
-  }
+  },
+  { immediate: true }
 )
 </script>
 
