@@ -1,6 +1,6 @@
 <template>
   <div class="base-container">
-    <header style="z-index: 5000">
+    <header style="z-index: 5000;">
       <van-nav-bar
         :title="globalStore.title"
         left-arrow
@@ -16,7 +16,7 @@
     <div class="layout-content">
       <RouterView #default="{ Component, route }">
         <KeepAlive :include="keepAliveRouteNames">
-          <component :is="Component" :key="route.name" />
+          <component :is="Component" :key="route.name" v-if="route.meta?.keepAlive"/>
         </KeepAlive>
         <component v-if="!route.meta?.keepAlive" :is="Component" :key="route.name" />
       </RouterView>

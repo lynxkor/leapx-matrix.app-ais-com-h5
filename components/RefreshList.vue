@@ -1,11 +1,13 @@
 <template>
   <van-pull-refresh v-model="refreshing" @refresh="onRefresh" class="pull-refresh-content">
+    <van-loading color="#00AA00" class="loading-area" v-if="isFetch"/>
     <van-list
       v-model:loading="loading"
       :finished="finished"
       finished-text="没有更多了"
       @load="onLoad"
       class="van-list-content"
+      v-else
     >
       <div class="slot-content">
         <slot></slot>
@@ -119,5 +121,11 @@ watch(
   .slot-content{
     width: 94vw;
     margin: 0 auto;
+  }
+  .loading-area{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
   }
 </style>

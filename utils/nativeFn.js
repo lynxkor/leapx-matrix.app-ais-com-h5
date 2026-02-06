@@ -14,3 +14,11 @@ export function toScan() {
     })
   }
 }
+
+export function getAppImg() {
+  if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
+    window.Android.selectImage()
+  } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
+    window.webkit.messageHandlers.selectImage.postMessage(null)
+  }
+}
