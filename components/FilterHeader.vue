@@ -29,21 +29,27 @@
                           <div class="option-list">
 
                               <template v-if="item.nodeType === 'single'">
-                                  <p v-for="(optionItem, optionIndex) in item.options" :key="optionIndex"
-                                      :class="searchForm[item.key] && searchForm[item.key] == optionItem.value ? 'option-text active-option-text' : 'option-text'"
-                                      @click="toggleOptionValue(item.key, optionItem.value, item.nodeType)"
-                                  >
-                                      {{ optionItem.label }}
-                                  </p>
+                                <div v-if="!item.options.length" class="empty-text">
+                                  {{ item.placeholder }}
+                                </div>
+                                <p v-else v-for="(optionItem, optionIndex) in item.options" :key="optionIndex"
+                                    :class="searchForm[item.key] && searchForm[item.key] == optionItem.value ? 'option-text active-option-text' : 'option-text'"
+                                    @click="toggleOptionValue(item.key, optionItem.value, item.nodeType)"
+                                >
+                                    {{ optionItem.label }}
+                                </p>
                               </template>
 
                               <template v-if="item.nodeType === 'multiple'">
-                                  <p v-for="(optionItem, optionIndex) in item.options" :key="optionIndex"
-                                      :class="searchForm[item.key] && Array.isArray(searchForm[item.key]) && searchForm[item.key].includes(optionItem.value) ? 'option-text active-option-text' : 'option-text'"
-                                      @click="toggleOptionValue(item.key, optionItem.value, item.nodeType, item.callBack, item.resetDic)"
-                                  >
-                                      {{ optionItem.label }}
-                                  </p>
+                                <div v-if="!item.options.length" class="empty-text">
+                                  {{ item.placeholder }}
+                                </div>
+                                <p v-else v-for="(optionItem, optionIndex) in item.options" :key="optionIndex"
+                                    :class="searchForm[item.key] && Array.isArray(searchForm[item.key]) && searchForm[item.key].includes(optionItem.value) ? 'option-text active-option-text' : 'option-text'"
+                                    @click="toggleOptionValue(item.key, optionItem.value, item.nodeType, item.callBack, item.resetDic)"
+                                >
+                                    {{ optionItem.label }}
+                                </p>
                               </template>
                               <template v-if="item.nodeType === 'day' || item.nodeType === 'month' || item.nodeType === 'year'">
                                 <p v-for="(optionItem, optionIndex) in item.list"
@@ -142,7 +148,7 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  searchList: {
+  filterList: {
     type: Array,
     default: () => {
       return []
@@ -169,6 +175,7 @@ watch(
   }
 )
 
+const searchList = ref([])
 const searchValue = ref('')
 const sortOrder = ref(false)
 const isInput = ref(false)
@@ -207,7 +214,7 @@ const dateTimeFilter = (_arr, type) => {
 }
 
 onMounted(() => {
-  if (props.searchList && props.searchList.length > 0) {
+  if (searchList.value && searchList.value.length > 0) {
     setSearchForm()
   }
 
@@ -233,7 +240,7 @@ onMounted(() => {
 })
 
 const setSearchForm = () => {
-  props.searchList.forEach(item => {
+  searchList.value.forEach(item => {
     let value
     if (item.nodeType === 'single') {
       value = item.default ? item.default : ''
@@ -264,8 +271,9 @@ const setSearchForm = () => {
 }
 
 watch(
-  () => props.searchList,
+  () => props.filterList,
   (newSearchList) => {
+    searchList.value = [...newSearchList]
     if (newSearchList && newSearchList.length > 0) {
       setSearchForm()
     }
@@ -579,9 +587,6 @@ const pickClick = () => {
                         word-break: keep-all;
                         padding: 7px 4px;
                         margin-right: 8px;
-                        &:nth-of-type(3n) {
-                            margin-right: 0;
-                        }
                     }
                     .user-icon{
                         // flex: 0 0 100%;
@@ -591,6 +596,10 @@ const pickClick = () => {
                         color: #00AA00;
                     }
                 }
+            }
+            .empty-text{
+              color: #333;
+              font-size: 12px;
             }
         }
     }
