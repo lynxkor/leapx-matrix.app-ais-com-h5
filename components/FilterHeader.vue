@@ -572,6 +572,7 @@ const pickClick = () => {
                     flex-wrap: wrap;
                     // justify-content: space-between;
                     justify-content: flex-start;
+                    gap: 8px;
                     .option-text{
                         min-width: 77px;
                         background: #FFFFFF;
@@ -580,13 +581,13 @@ const pickClick = () => {
                         line-height: 15px;
                         text-align: center;
                         font-size: 10px;
-                        margin-bottom: 8px;
                         font-family: PingFangSC-Regular, PingFang SC;
                         font-weight: 400;
                         color: #191A1B;
                         word-break: keep-all;
                         padding: 7px 4px;
-                        margin-right: 8px;
+                        // margin-right: 8px;
+                        // margin-bottom: 8px;
                     }
                     .user-icon{
                         // flex: 0 0 100%;

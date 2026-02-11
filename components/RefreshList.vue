@@ -1,6 +1,6 @@
 <template>
   <van-pull-refresh v-model="refreshing" @refresh="onRefresh" class="pull-refresh-content">
-    <van-loading color="#00AA00" class="loading-area" v-if="isFetch"/>
+    <van-loading color="#00AA00" class="loading-area" v-if="isLoading"/>
     <van-list
       v-model:loading="loading"
       :finished="finished"
@@ -39,6 +39,8 @@ const refreshing = ref(false)
 const searchParams = reactive({})
 // 接口请求中
 const isFetch = ref(false)
+// 刷新loading态
+const isLoading = ref(false)
 
 const onRefresh = () => {
   finished.value = false
@@ -60,6 +62,7 @@ const onLoad = () => {
 const getData = (isRefresh) => {
   if (isRefresh) {
     searchParams.pageNum = 1
+    isLoading.value = true
   }
   // loading.value = true
   isFetch.value = true
@@ -81,17 +84,20 @@ const getData = (isRefresh) => {
         finished.value = false
       }
       isFetch.value = false
+      isLoading.value = false
     }
   }).catch(err => {
     loading.value = false
     refreshing.value = false
     isFetch.value = false
+    isLoading.value = false
     console.log(err)
     emit('setData', [])
   }).finally(() => {
     loading.value = false
     refreshing.value = false
     isFetch.value = false
+    isLoading.value = false
   })
 }
 
