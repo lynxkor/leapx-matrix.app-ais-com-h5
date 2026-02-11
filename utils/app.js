@@ -19,10 +19,10 @@ export function outWebview() {
   const navigatorType = getNavigatorType()
   switch (navigatorType) {
     case NAVIGATOR_TYPE_ANDROID:
-      window.Android.outWebview()
+      window.Android.goback()
       break
     case NAVIGATOR_TYPE_IOS:
-      window.webkit.messageHandlers.outWebview.postMessage(null)
+      window.webkit.messageHandlers.revert.postMessage(null)
       break
     default:
       window.close()
