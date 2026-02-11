@@ -380,9 +380,28 @@ const clearClick = () => {
 }
 
 const filterClick = () => {
-  emit('filterSearch', searchForm)
+  console.log(searchForm)
+  highlightSerchIcon.value = false
+  const _valueList = Object.values(searchForm)
+  for (const _value of _valueList) {
+    if (typeof _value === 'string') {
+      if (_value) {
+        console.log('字符串', _value)
+        highlightSerchIcon.value = true
+        break
+      }
+    } else if (typeof _value === 'object') {
+      if (Array.isArray(_value)) {
+        if (_value.length) {
+          console.log('数组', _value)
+          highlightSerchIcon.value = true
+          break
+        }
+      }
+    }
+  }
+  // emit('filterSearch', searchForm)
   hidePannel()
-  highlightSerchIcon.value = true
 }
 
 const showPick = (item) => {
