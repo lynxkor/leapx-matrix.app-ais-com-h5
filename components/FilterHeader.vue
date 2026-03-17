@@ -453,18 +453,17 @@ const calculateFilterCount = () => {
     const value = searchForm[key]
     if (value) {
       if (Array.isArray(value)) {
-        // 对于数组类型，检查是否有元素
-        if (value.length > 0) {
-          count++
-        }
+        // 对于数组类型，计算数组长度
+        count += value.length
       } else if (typeof value === 'object' && value !== null) {
-        // 对于对象类型，检查是否有属性
-        if (Object.keys(value).length > 0) {
-          count++
-        }
-      } else {
-        // 对于其他类型，只要有值就计数
-        count++
+        // 对于对象类型，计算属性数量
+        count += Object.keys(value).length
+      } else if (typeof value === 'string') {
+        // 对于字符串类型，只要有值就计数为1
+        count += 1
+      } else if (typeof value === 'number') {
+        // 对于数字类型，只要有值就计数为1
+        count += 1
       }
     }
   }
