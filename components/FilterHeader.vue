@@ -9,7 +9,8 @@
           @focus="focusEvent"
           @blur="blurEvent"
           @search="searchEvent"
-          :clearable="false"
+          :clearable="true"
+          @clear="clearSearch"
         />
         <img
           class="scan-icon"
@@ -22,14 +23,23 @@
         <img class="toggle-icon" :src="sortOrder ? sortDownIcon : sortUpIcon" />
         <span class="toggle-span">按照日期{{ sortOrder ? '升序' : '降序' }}</span>
       </div>
-      <img
-        v-show="!isInput && searchList.length"
-        :class="
-          highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'
-        "
-        :src="highlightSerchIcon ? moreIconHl : moreIcon"
-        @click="showPannel"
-      />
+      <!-- 搜索按钮 - 输入框聚焦且有内容时显示 -->
+      <div v-show="isInput && searchValue" class="search-btn" @mousedown="handleSearchClick">
+        搜索
+      </div>
+
+      <!-- 更多条件按钮 - 输入框失焦且有搜索条件时显示 -->
+      <div v-show="!isInput && searchList.length" class="more-condition-container">
+        <img
+          :class="
+            highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'
+          "
+          :src="highlightSerchIcon ? moreIconHl : moreIcon"
+          @click="showPannel"
+        />
+        <!-- 筛选条件数量角标 -->
+        <div v-if="filterCount > 0" class="filter-count-badge">{{ filterCount }}</div>
+      </div>
     </div>
     <van-popup position="top" v-model:show="popupShow" class="top-pop" :class="topupClass">
       <div class="pop-inner-content">
@@ -66,7 +76,9 @@
                         ? 'option-text active-option-text'
                         : 'option-text'
                     "
-                    @click="toggleOptionValue(item.key, optionItem.value, item.nodeType)"
+                    @click="
+                      toggleOptionValue(item.key, optionItem.value, item.nodeType, item.callBack)
+                    "
                   >
                     {{ optionItem.label }}
                   </p>
@@ -298,6 +310,7 @@ const tempTime = reactive({
 })
 const pickVisible = ref(false)
 const highlightSerchIcon = ref(false)
+const filterCount = ref(0)
 
 const itemRefs = ref([])
 const optionRefView = (el) => {
@@ -396,6 +409,7 @@ const focusEvent = () => {
 
 const blurEvent = () => {
   isInput.value = false
+  searchEvent(searchValue.value)
 }
 
 const searchEvent = (e) => {
@@ -403,6 +417,17 @@ const searchEvent = (e) => {
     sortOrder: sortOrder.value,
     searchValue: e,
   })
+}
+
+// 清除搜索内容
+const clearSearch = () => {
+  searchValue.value = ''
+  searchEvent('')
+}
+
+// 点击搜索按钮
+const handleSearchClick = () => {
+  searchEvent(searchValue.value)
 }
 
 const scanClick = () => {
@@ -418,6 +443,32 @@ const toggleSort = () => {
     sortOrder: sortOrder.value,
     searchValue: searchValue,
   })
+}
+
+// 计算筛选条件数量
+const calculateFilterCount = () => {
+  let count = 0
+  // 遍历 searchForm 中的所有字段
+  for (const key in searchForm) {
+    const value = searchForm[key]
+    if (value) {
+      if (Array.isArray(value)) {
+        // 对于数组类型，检查是否有元素
+        if (value.length > 0) {
+          count++
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        // 对于对象类型，检查是否有属性
+        if (Object.keys(value).length > 0) {
+          count++
+        }
+      } else {
+        // 对于其他类型，只要有值就计数
+        count++
+      }
+    }
+  }
+  filterCount.value = count
 }
 
 const showPannel = () => {
@@ -440,6 +491,9 @@ const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
   if (_type === 'single') {
     if (searchForm[_key] !== _value) {
       searchForm[_key] = _value
+    }
+    if (_callBack) {
+      _callBack(_value)
     }
   } else if (_type === 'multiple') {
     let arr = searchForm[_key]
@@ -472,6 +526,9 @@ const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
       choiceDic[_key] = '自选'
     }
   }
+
+  // 更新筛选条件数量
+  calculateFilterCount()
 }
 
 const clearClick = () => {
@@ -614,6 +671,28 @@ const pickClick = () => {
       word-break: keep-all;
     }
   }
+  .search-btn {
+    height: 26px;
+    width: 52px;
+    padding: 0 12px;
+    background-color: #009100;
+    color: #ffffff;
+    border-radius: 15px;
+    font-size: 12px;
+    font-family:
+      PingFangSC-Regular,
+      PingFang SC;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .more-condition-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .more-condition-btn {
     width: 30px;
     height: 30px;
@@ -622,6 +701,23 @@ const pickClick = () => {
   }
   .more-condition-btn-hl {
     border: 1px solid #00aa00;
+  }
+  .filter-count-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #009100;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    line-height: 1;
   }
 }
 
