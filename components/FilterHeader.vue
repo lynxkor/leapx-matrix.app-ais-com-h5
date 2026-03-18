@@ -7,7 +7,6 @@
           v-model="searchValue"
           :placeholder="placeholder"
           @focus="focusEvent"
-          @blur="blurEvent"
           @search="searchEvent"
           :clearable="true"
           @clear="clearSearch"
@@ -407,10 +406,10 @@ const focusEvent = () => {
   isInput.value = true
 }
 
-const blurEvent = () => {
-  isInput.value = false
-  searchEvent(searchValue.value)
-}
+// const blurEvent = () => {
+//   isInput.value = false
+//   searchEvent(searchValue.value)
+// }
 
 const searchEvent = (e) => {
   emit('search', {
