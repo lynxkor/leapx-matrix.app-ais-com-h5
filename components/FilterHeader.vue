@@ -7,6 +7,7 @@
           v-model="searchValue"
           :placeholder="placeholder"
           @focus="focusEvent"
+          @blur="blurEvent"
           @search="searchEvent"
           :clearable="true"
           @clear="clearSearch"
@@ -27,8 +28,8 @@
         搜索
       </div>
 
-      <!-- 更多条件按钮 - 输入框失焦且有搜索条件时显示 -->
-      <div v-show="!isInput && searchList.length" class="more-condition-container">
+      <!-- 更多条件按钮 - 有筛选条件或者在非输入状态且有筛选选项时显示 -->
+      <div v-show="filterCount > 0 || (!isInput && searchList.length)" class="more-condition-container">
         <img
           :class="
             highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'
@@ -406,6 +407,10 @@ const focusEvent = () => {
   isInput.value = true
 }
 
+const blurEvent = () => {
+  isInput.value = false
+}
+
 // const blurEvent = () => {
 //   isInput.value = false
 //   searchEvent(searchValue.value)
@@ -422,11 +427,15 @@ const searchEvent = (e) => {
 const clearSearch = () => {
   searchValue.value = ''
   searchEvent('')
+  // 当搜索内容被清空时，输入框不再处于输入状态
+  isInput.value = false
 }
 
 // 点击搜索按钮
 const handleSearchClick = () => {
   searchEvent(searchValue.value)
+  // 搜索完成后，将焦点移开，这样可以显示筛选按钮
+  isInput.value = false
 }
 
 // 清空筛选条件
@@ -596,16 +605,39 @@ const clearClick = () => {
   Object.keys(choiceDic).map((item) => {
     choiceDic[item] = '自选'
   })
-  highlightSerchIcon.value = false
 
   // 重新计算筛选条件数量
   calculateFilterCount()
+
+  // 基于筛选条件数量来决定高亮状态
+  const _valueList = Object.values(searchForm)
+  highlightSerchIcon.value = false
+  for (const _value of _valueList) {
+    if (typeof _value === 'string') {
+      if (_value) {
+        highlightSerchIcon.value = true
+        break
+      }
+    } else if (typeof _value === 'object') {
+      if (Array.isArray(_value)) {
+        if (_value.length) {
+          highlightSerchIcon.value = true
+          break
+        }
+      }
+    }
+  }
 }
 
 const filterClick = () => {
   console.log(searchForm)
-  highlightSerchIcon.value = false
+
+  // 重新计算筛选条件数量和高亮状态
+  calculateFilterCount()
+
+  // 基于筛选条件数量来决定高亮状态
   const _valueList = Object.values(searchForm)
+  highlightSerchIcon.value = false
   for (const _value of _valueList) {
     if (typeof _value === 'string') {
       if (_value) {
@@ -623,9 +655,6 @@ const filterClick = () => {
       }
     }
   }
-
-  // 重新计算筛选条件数量
-  calculateFilterCount()
 
   emit('filterSearch', searchForm)
   hidePannel()
