@@ -1,7 +1,7 @@
 <template>
   <div style="box-shadow: 0px 1px 0px 0px rgba(210, 216, 223, 0.6)">
     <div class="search-content">
-      <form action="/" class="search-input">
+      <form action="/" class="search-input" :class="{ 'with-scan': showScan }">
         <van-search
           shape="round"
           v-model="searchValue"
@@ -262,33 +262,33 @@ import moreIconHl from '../assets/image/more_condition_icon_highlight.png'
 const props = defineProps({
   placeholder: {
     type: String,
-    default: '',
+    default: ''
   },
   filterList: {
     type: Array,
     default: () => {
       return []
-    },
+    }
   },
   showScan: {
     type: Boolean,
-    default: true,
+    default: true
   },
   showSort: {
     type: Boolean,
-    default: true,
+    default: true
   },
   isHeaderClick: {
     type: Boolean,
-    default: true,
-  },
+    default: true
+  }
 })
 
 watch(
   () => props.isHeaderClick,
   (newVal) => {
     isHeaderScan.value = !newVal
-  },
+  }
 )
 
 const searchList = ref([])
@@ -305,7 +305,7 @@ const choiceDic = reactive({})
 const tempTime = reactive({
   selectType: 'start',
   startTime: [],
-  endTime: [],
+  endTime: []
 })
 const pickVisible = ref(false)
 const highlightSerchIcon = ref(false)
@@ -399,7 +399,7 @@ watch(
       setSearchForm()
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 const focusEvent = () => {
@@ -414,7 +414,7 @@ const focusEvent = () => {
 const searchEvent = (e) => {
   emit('search', {
     sortOrder: sortOrder.value,
-    searchValue: e,
+    searchValue: e
   })
 }
 
@@ -429,6 +429,25 @@ const handleSearchClick = () => {
   searchEvent(searchValue.value)
 }
 
+// 清空筛选条件
+const resetFilters = () => {
+  // 清空搜索框
+  searchValue.value = ''
+
+  // 清空所有筛选条件
+  clearClick()
+
+  // 重置高亮图标状态
+  highlightSerchIcon.value = false
+
+  // 重置筛选条件数量
+  filterCount.value = 0
+}
+
+defineExpose({
+  resetFilters
+})
+
 const scanClick = () => {
   isHeaderScan.value = true
   // 1vin码 2钥匙 3合格证
@@ -440,19 +459,34 @@ const toggleSort = () => {
   sortOrder.value = !sortOrder.value
   emit('search', {
     sortOrder: sortOrder.value,
-    searchValue: searchValue,
+    searchValue: searchValue
   })
 }
 
 // 计算筛选条件数量
 const calculateFilterCount = () => {
   let count = 0
+  const processedKeys = new Set() // 用于跟踪已处理的键，防止重复计算
+
   // 遍历 searchForm 中的所有字段
   for (const key in searchForm) {
     const value = searchForm[key]
-    if (value) {
+
+    // 检查是否是时间类型的字段
+    const isTimeField = searchList.value.some(item =>
+      item.key === key && ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType)
+    )
+
+    if (value && isTimeField) {
+      // 时间字段特殊处理：只要值存在且不为空，就算作1个条件
+      if (Array.isArray(value) && value.length === 2 && value[0] && value[1]) {
+        count += 1
+        processedKeys.add(key) // 标记这个键已被处理
+      }
+    } else if (value) {
+      // 非时间字段的常规处理
       if (Array.isArray(value)) {
-        // 对于数组类型，计算数组长度
+        // 对于普通的数组类型，计算数组长度
         count += value.length
       } else if (typeof value === 'object' && value !== null) {
         // 对于对象类型，计算属性数量
@@ -466,6 +500,28 @@ const calculateFilterCount = () => {
       }
     }
   }
+
+  // 检查choiceDic中的时间选择，但跳过已在searchForm中处理过的键
+  for (const key in choiceDic) {
+    // 如果这个键已经在searchForm中处理过了，跳过
+    if (processedKeys.has(key)) {
+      continue
+    }
+
+    const value = choiceDic[key]
+    if (value && value !== '自选') {
+      // 检查是否是时间类型的字段
+      const isTimeField = searchList.value.some(item =>
+        item.key === key && ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType)
+      )
+
+      if (isTimeField) {
+        // 时间选择视为1个条件
+        count += 1
+      }
+    }
+  }
+
   filterCount.value = count
 }
 
@@ -541,6 +597,9 @@ const clearClick = () => {
     choiceDic[item] = '自选'
   })
   highlightSerchIcon.value = false
+
+  // 重新计算筛选条件数量
+  calculateFilterCount()
 }
 
 const filterClick = () => {
@@ -564,6 +623,10 @@ const filterClick = () => {
       }
     }
   }
+
+  // 重新计算筛选条件数量
+  calculateFilterCount()
+
   emit('filterSearch', searchForm)
   hidePannel()
 }
@@ -581,7 +644,7 @@ const showPick = (item) => {
       selectType: 'start',
       columnsType,
       startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(thirtyDaysBefore, type),
-      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type),
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
     })
   } else if (type === 'hour' || type === 'minute' || type === 'second') {
     const now = new Date()
@@ -591,7 +654,7 @@ const showPick = (item) => {
       selectType: 'start',
       columnsType,
       startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(now, type),
-      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type),
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
     })
   }
   pickVisible.value = true
@@ -615,6 +678,9 @@ const pickClick = () => {
   pickVisible.value = false
   searchForm[tempTime.key] = [tempTime.startTime, tempTime.endTime]
   choiceDic[tempTime.key] = [tempTime.startTime, tempTime.endTime]
+
+  // 重新计算筛选条件数量
+  calculateFilterCount()
 }
 </script>
 
@@ -645,6 +711,24 @@ const pickClick = () => {
     position: absolute;
     top: 0px;
     right: 8px;
+    z-index: 2;
+  }
+
+  .search-input {
+    position: relative;
+  }
+
+  /* 当显示扫描图标时，调整搜索框的清除按钮位置 */
+  .search-input.with-scan {
+    :deep(.van-search__content) {
+      padding-right: 30px;
+    }
+  }
+
+  .search-input.with-scan {
+    :deep(.van-search__clear) {
+      right: 30px;
+    }
   }
   .toggle-content {
     display: flex;
