@@ -24,10 +24,7 @@
         <span class="toggle-span">按照日期{{ sortOrder ? '升序' : '降序' }}</span>
       </div>
 
-      <div
-        v-show="filterCount > 0 || (!isInput && searchList.length)"
-        class="more-condition-container"
-      >
+      <div class="more-condition-container">
         <img
           :class="
             highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'
