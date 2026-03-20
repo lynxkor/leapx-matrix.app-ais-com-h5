@@ -23,13 +23,11 @@
         <img class="toggle-icon" :src="sortOrder ? sortDownIcon : sortUpIcon" />
         <span class="toggle-span">按照日期{{ sortOrder ? '升序' : '降序' }}</span>
       </div>
-      <!-- 搜索按钮 - 输入框聚焦且有内容时显示 -->
-      <div v-show="isInput && searchValue" class="search-btn" @mousedown="handleSearchClick">
-        搜索
-      </div>
 
-      <!-- 更多条件按钮 - 有筛选条件或者在非输入状态且有筛选选项时显示 -->
-      <div v-show="filterCount > 0 || (!isInput && searchList.length)" class="more-condition-container">
+      <div
+        v-show="filterCount > 0 || (!isInput && searchList.length)"
+        class="more-condition-container"
+      >
         <img
           :class="
             highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'
@@ -263,33 +261,33 @@ import moreIconHl from '../assets/image/more_condition_icon_highlight.png'
 const props = defineProps({
   placeholder: {
     type: String,
-    default: ''
+    default: '',
   },
   filterList: {
     type: Array,
     default: () => {
       return []
-    }
+    },
   },
   showScan: {
     type: Boolean,
-    default: true
+    default: true,
   },
   showSort: {
     type: Boolean,
-    default: true
+    default: true,
   },
   isHeaderClick: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 })
 
 watch(
   () => props.isHeaderClick,
   (newVal) => {
     isHeaderScan.value = !newVal
-  }
+  },
 )
 
 const searchList = ref([])
@@ -306,7 +304,7 @@ const choiceDic = reactive({})
 const tempTime = reactive({
   selectType: 'start',
   startTime: [],
-  endTime: []
+  endTime: [],
 })
 const pickVisible = ref(false)
 const highlightSerchIcon = ref(false)
@@ -400,7 +398,7 @@ watch(
       setSearchForm()
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const focusEvent = () => {
@@ -419,7 +417,7 @@ const blurEvent = () => {
 const searchEvent = (e) => {
   emit('search', {
     sortOrder: sortOrder.value,
-    searchValue: e
+    searchValue: e,
   })
 }
 
@@ -454,7 +452,7 @@ const resetFilters = () => {
 }
 
 defineExpose({
-  resetFilters
+  resetFilters,
 })
 
 const scanClick = () => {
@@ -468,7 +466,7 @@ const toggleSort = () => {
   sortOrder.value = !sortOrder.value
   emit('search', {
     sortOrder: sortOrder.value,
-    searchValue: searchValue
+    searchValue: searchValue,
   })
 }
 
@@ -482,8 +480,10 @@ const calculateFilterCount = () => {
     const value = searchForm[key]
 
     // 检查是否是时间类型的字段
-    const isTimeField = searchList.value.some(item =>
-      item.key === key && ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType)
+    const isTimeField = searchList.value.some(
+      (item) =>
+        item.key === key &&
+        ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType),
     )
 
     if (value && isTimeField) {
@@ -520,8 +520,10 @@ const calculateFilterCount = () => {
     const value = choiceDic[key]
     if (value && value !== '自选') {
       // 检查是否是时间类型的字段
-      const isTimeField = searchList.value.some(item =>
-        item.key === key && ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType)
+      const isTimeField = searchList.value.some(
+        (item) =>
+          item.key === key &&
+          ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType),
       )
 
       if (isTimeField) {
@@ -673,7 +675,7 @@ const showPick = (item) => {
       selectType: 'start',
       columnsType,
       startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(thirtyDaysBefore, type),
-      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type),
     })
   } else if (type === 'hour' || type === 'minute' || type === 'second') {
     const now = new Date()
@@ -683,7 +685,7 @@ const showPick = (item) => {
       selectType: 'start',
       columnsType,
       startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(now, type),
-      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type),
     })
   }
   pickVisible.value = true
