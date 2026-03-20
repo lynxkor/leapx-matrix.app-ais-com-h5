@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, defineProps, defineEmits, watch, computed } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 const props = defineProps({
   requestData: {
     type: Object,
