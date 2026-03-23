@@ -6,11 +6,12 @@
           shape="round"
           v-model="searchValue"
           :placeholder="placeholder"
-          @focus="focusEvent"
+          @focus.stop="focusEvent"
           @blur="blurEvent"
           @search="searchEvent"
           :clearable="true"
-          @clear="clearSearch"
+          clear-trigger="always"
+          @clear.stop="clearSearch"
         />
         <img
           class="scan-icon"
@@ -295,7 +296,7 @@ watch(
 )
 
 const searchList = ref([])
-const searchValue = ref('')
+const searchValue = ref('1231')
 const sortOrder = ref(false)
 const isInput = ref(false)
 const popupShow = ref(false)
