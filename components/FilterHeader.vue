@@ -6,7 +6,7 @@
           shape="round"
           v-model="searchValue"
           :placeholder="placeholder"
-          @focus.stop="focusEvent"
+          @focus="focusEvent"
           @blur="blurEvent"
           @search="searchEvent"
           :clearable="true"
