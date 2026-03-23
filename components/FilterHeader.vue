@@ -108,6 +108,18 @@
                     {{ optionItem.label }}
                   </p>
                 </template>
+                <!-- 可输入框搜索下拉选择类型的, 支持输入搜索数据 -->
+                <template v-if="item.nodeType === 'search'">
+                  <search-dropdown
+                    v-model="searchForm[item.key]"
+                    v-model:search-keyword="item.searchKeyword"
+                    :options="item.options"
+                    :placeholder="item.placeholder"
+                    @select="handleSearchSelect(item, $event)"
+                    @focus="handleSearchFocus(item)"
+                    @on-search="handleSearchInput(item, $event)"
+                  />
+                </template>
                 <template
                   v-if="
                     item.nodeType === 'day' || item.nodeType === 'month' || item.nodeType === 'year'
@@ -248,16 +260,16 @@
 import { ref, defineProps, reactive, watch, onMounted, defineEmits, onBeforeUpdate } from 'vue'
 import { useRouter } from 'vue-router'
 import { getNavigatorType, formatDate } from '../utils/index'
-const navigatorType = getNavigatorType()
-const router = useRouter()
-const emit = defineEmits(['search', 'filterSearch', 'scanCb'])
 import { toScan } from '../utils/nativeFn'
-
 import sortDownIcon from '../assets/image/sort_down_icon.svg'
 import sortUpIcon from '../assets/image/sort_up_icon.svg'
 import moreIcon from '../assets/image/more_condition_icon.png'
 import moreIconHl from '../assets/image/more_condition_icon_highlight.png'
+import SearchDropdown from './SearchDropdown.vue'
 
+const navigatorType = getNavigatorType()
+const router = useRouter()
+const emit = defineEmits(['search', 'filterSearch', 'scanCb', 'searchFocus', 'searchChange'])
 const props = defineProps({
   placeholder: {
     type: String,
@@ -367,6 +379,8 @@ const setSearchForm = () => {
     } else if (item.nodeType === 'multiple') {
       value = item.default ? item.default : []
       multipleList.value.push(item.key)
+    } else if (item.nodeType === 'search') {
+      value = item.default ? item.default : ''
     } else if (item.nodeType === 'year' || item.nodeType === 'month' || item.nodeType === 'day') {
       if (Array.isArray(item.default) && item.default.length) {
         value = item.default
@@ -638,6 +652,49 @@ const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
 
   // 更新筛选条件数量
   calculateFilterCount()
+}
+
+// 搜索下拉组件 - 选择搜索结果项
+const handleSearchSelect = (item, option) => {
+  // 设置选中值
+  searchForm[item.key] = option.value
+
+  // 执行回调
+  if (item.callBack) {
+    item.callBack(option.value)
+  }
+
+  // 更新筛选条件数量
+  calculateFilterCount()
+}
+
+// 搜索下拉组件 - 聚焦事件（展示默认数据）
+const handleSearchFocus = (item) => {
+  // 如果没有数据且有获取默认数据的回调，则触发回调获取默认数据
+  if ((!item.options || item.options.length === 0) && item.loadDefaultData) {
+    item.loadDefaultData()
+  }
+
+  // 向外发出事件，让父组件（页面）可以监听处理
+  emit('searchFocus', {
+    key: item.key,
+    item: item,
+  })
+}
+
+// 搜索下拉组件 - 搜索事件（根据关键词请求新数据）
+const handleSearchInput = (item, keyword) => {
+  // 1. 先触发 item 配置中的搜索回调（兼容原有方式）
+  if (item.onSearch) {
+    item.onSearch(keyword)
+  }
+
+  // 2. 向外发出事件，让父组件（页面）可以监听处理
+  emit('searchChange', {
+    key: item.key,
+    keyword: keyword,
+    item: item,
+  })
 }
 
 const clearClick = () => {
