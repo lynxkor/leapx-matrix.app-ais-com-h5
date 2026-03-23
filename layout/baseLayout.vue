@@ -1,6 +1,6 @@
 <template>
   <div class="base-container">
-    <header style="z-index: 5000">
+    <header style="z-index: 5000" v-if="!route.meta?.hideHeader">
       <van-nav-bar :title="globalStore.title" left-arrow @click-left="goBack">
         <template #title>
           <div class="custom-title">
@@ -25,8 +25,7 @@
 
 <script setup lang="ts">
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { ref, computed } from 'vue'
-
+import { ref, computed, watch } from 'vue'
 import { useGlobalStore } from '@/stores/global'
 import { goBack } from '../utils/app'
 
@@ -34,6 +33,18 @@ const globalStore = useGlobalStore()
 
 const router = useRouter()
 const route = useRoute()
+
+// 监听路由变化，当从隐藏头部的页面返回时恢复标题
+watch(
+  () => route.fullPath,
+  (newPath, oldPath) => {
+    // 如果当前路由不隐藏头部，则恢复标题
+    if (!route.meta?.hideHeader && route.meta?.title) {
+      globalStore.setTitle(route.meta.title)
+    }
+  },
+  { immediate: true },
+)
 const keepAliveRouteNames = computed(() => {
   return router
     .getRoutes()

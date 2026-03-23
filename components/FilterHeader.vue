@@ -245,8 +245,10 @@
 
 <script setup>
 import { ref, defineProps, reactive, watch, onMounted, defineEmits, onBeforeUpdate } from 'vue'
+import { useRouter } from 'vue-router'
 import { getNavigatorType, formatDate } from '../utils/index'
 const navigatorType = getNavigatorType()
+const router = useRouter()
 const emit = defineEmits(['search', 'filterSearch', 'scanCb'])
 import { toScan } from '../utils/nativeFn'
 
@@ -277,6 +279,11 @@ const props = defineProps({
   isHeaderClick: {
     type: Boolean,
     default: true,
+  },
+  // 搜索页面路由配置 - 支持路由名称(name)或路径(path)
+  searchPageRoute: {
+    type: [String, Object],
+    default: null,
   },
 })
 
@@ -400,6 +407,46 @@ watch(
 
 const focusEvent = () => {
   isInput.value = true
+
+  // 如果配置了搜索页面路由，则跳转到搜索页面
+  if (props.searchPageRoute) {
+    goToSearchPage()
+  }
+}
+
+// 导航到搜索页面
+const goToSearchPage = () => {
+  if (!props.searchPageRoute) {
+    return
+  }
+
+  // 构建路由参数
+  let routeConfig = {}
+
+  if (typeof props.searchPageRoute === 'string') {
+    // 字符串形式：支持 name 或 path
+    if (props.searchPageRoute.startsWith('/')) {
+      routeConfig.path = props.searchPageRoute
+    } else {
+      routeConfig.name = props.searchPageRoute
+    }
+  } else if (typeof props.searchPageRoute === 'object') {
+    // 对象形式，直接使用
+    routeConfig = { ...props.searchPageRoute }
+  }
+
+  // 将当前搜索值传递给搜索页面
+  router.push({
+    ...routeConfig,
+    params: {
+      ...routeConfig.params,
+      initialValue: searchValue.value,
+    },
+    query: {
+      ...routeConfig.query,
+      from: 'filter-header',
+    },
+  })
 }
 
 const blurEvent = () => {
@@ -604,6 +651,12 @@ const clearClick = () => {
   Object.keys(choiceDic).map((item) => {
     choiceDic[item] = '自选'
   })
+
+  // 清除车系时，同步清空车型的options数据
+  const modelItem = searchList.value.find((item) => item.key === 'modelIdList')
+  if (modelItem) {
+    modelItem.options = []
+  }
 
   // 重新计算筛选条件数量
   calculateFilterCount()
