@@ -296,7 +296,7 @@ watch(
 )
 
 const searchList = ref([])
-const searchValue = ref('1231')
+const searchValue = ref('')
 const sortOrder = ref(false)
 const isInput = ref(false)
 const popupShow = ref(false)
@@ -349,12 +349,11 @@ onMounted(() => {
       }
       if (!isHeaderScan.value) {
         // 父组件的操作扫码
-        // 传出去结果
         emit('scanCb', _scanValue)
       } else {
-        // 头部的输入框扫码
+        // 头部的输入框扫码 - 直接覆盖原有值
         searchValue.value = _scanValue
-        searchEvent(searchValue)
+        searchEvent(_scanValue)
       }
     }
   }
