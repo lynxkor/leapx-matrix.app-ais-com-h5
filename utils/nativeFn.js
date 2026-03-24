@@ -25,6 +25,7 @@ export function getAppImg () {
 // 外呼
 export function callPhone (phone) {
   if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
+    console.log('phone:', phone)
     window.Android.outBoundcall(phone)
   } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
     window.webkit.messageHandlers.outBoundcall.postMessage(phone)
