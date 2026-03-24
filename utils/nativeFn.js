@@ -26,8 +26,8 @@ export function getAppImg () {
 export function callPhone (phone) {
   if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
     console.log('phone:', phone)
-    window.Android.outBoundcall(phone)
+    window.Android.outBoundCall(phone)
   } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
-    window.webkit.messageHandlers.outBoundcall.postMessage(phone)
+    window.webkit.messageHandlers.outBoundCall.postMessage(phone)
   }
 }
