@@ -709,8 +709,17 @@ const clearClick = () => {
     choiceDic[item] = '自选'
   })
 
+  // 清空搜索下拉框的输入值
+  searchList.value.forEach((item) => {
+    if (item.nodeType === 'search') {
+      item.searchKeyword = ''
+    }
+  })
+
   // 清除车系时，同步清空车型的options数据
-  const modelItem = searchList.value.find((item) => item.key === 'modelIdList')
+  const modelItem = searchList.value.find(
+    (item) => item.key === 'modelIdList' || item.key === 'modelId',
+  )
   if (modelItem) {
     modelItem.options = []
   }
