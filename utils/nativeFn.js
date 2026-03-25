@@ -25,8 +25,9 @@ export function getAppImg () {
 // 外呼
 export function callPhone (phone) {
   if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
-    window.Android.outBoundcall(phone)
+    console.log('phone:', phone)
+    window.Android.outBoundCall(phone)
   } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
-    window.webkit.messageHandlers.outBoundcall.postMessage(phone)
+    window.webkit.messageHandlers.outBoundCall.postMessage(phone)
   }
 }
