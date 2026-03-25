@@ -88,15 +88,39 @@ const getData = (isRefresh) => {
       console.log('res', res)
       if (res.code === 200) {
         const data = res.data
+        let records = []
+        let current = 1
+        let total = 0
+        let hasPagination = false
+
+        // 判断返回数据格式
+        if (Array.isArray(data)) {
+          // 直接返回数组格式（非分页）
+          records = data
+          current = 1
+          total = data.length
+          hasPagination = false
+        } else if (data && data.records) {
+          // 分页对象格式
+          records = data.records
+          current = data.current
+          total = data.total
+          hasPagination = true
+        }
+
         emit('setData', {
-          list: data.records,
-          isRefresh: data.current === 1
+          list: records,
+          isRefresh: current === 1
         })
-        if (data.current * data.pageSize >= data.total) {
-          // 条件判断加载完毕
+
+        // 判断是否加载完毕
+        if (!hasPagination) {
+          // 非分页接口，一次加载完毕
+          finished.value = true
+        } else if (records.length === 0 || current * (data.pageSize || searchParams.pageSize) >= total) {
+          // 分页接口，判断是否还有更多数据
           finished.value = true
         } else {
-          // 未加载完毕，页码加 1
           searchParams.pageNum = searchParams.pageNum + 1
           finished.value = false
         }
