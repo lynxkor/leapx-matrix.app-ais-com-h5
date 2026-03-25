@@ -210,24 +210,25 @@ defineExpose({
 
 .search-dropdown-list {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
-  max-height: 200px;
+  max-height: 240px;
   overflow-y: auto;
   background: #ffffff;
   border: 1px solid #e8e8e8;
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  -webkit-overflow-scrolling: touch;
 
   .dropdown-item {
-    padding: 10px 12px;
+    padding: 12px;
     font-size: 14px;
     color: #191a1b;
     cursor: pointer;
     transition: background-color 0.2s;
+    line-height: 1.5;
 
     &:hover {
       background-color: #f7f8fa;
@@ -258,7 +259,7 @@ defineExpose({
 
 .search-no-result {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
   padding: 20px;
@@ -268,8 +269,7 @@ defineExpose({
   background: #ffffff;
   border: 1px solid #e8e8e8;
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
 }
 </style>
