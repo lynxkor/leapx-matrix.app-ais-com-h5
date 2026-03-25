@@ -36,12 +36,12 @@ const props = defineProps({
     type: Object,
     default: () => {
       return {}
-    },
+    }
   },
   hasNoData: {
     type: Boolean,
-    default: false,
-  },
+    default: false
+  }
 })
 
 const emit = defineEmits(['setData', 'resetFilters'])
@@ -55,7 +55,7 @@ const refreshing = ref(false)
 const searchParams = reactive({})
 // 接口请求中
 const isFetch = ref(false)
-// 刷新loading态
+// 刷新 loading 态
 const isLoading = ref(false)
 
 const onRefresh = () => {
@@ -80,7 +80,6 @@ const getData = (isRefresh) => {
     searchParams.pageNum = 1
     isLoading.value = true
   }
-  // loading.value = true
   isFetch.value = true
   console.log('搜索项', searchParams)
   props.requestData
@@ -91,18 +90,24 @@ const getData = (isRefresh) => {
         const data = res.data
         emit('setData', {
           list: data.records,
-          isRefresh: data.current === 1,
+          isRefresh: data.current === 1
         })
         if (data.current * data.pageSize >= data.total) {
           // 条件判断加载完毕
           finished.value = true
         } else {
-          // 未加载完毕，页码加1
+          // 未加载完毕，页码加 1
           searchParams.pageNum = searchParams.pageNum + 1
           finished.value = false
         }
         isFetch.value = false
         isLoading.value = false
+      } else {
+        // 接口返回非 200 时也停止加载
+        finished.value = true
+        isFetch.value = false
+        isLoading.value = false
+        emit('setData', [])
       }
     })
     .catch((err) => {
@@ -110,6 +115,7 @@ const getData = (isRefresh) => {
       refreshing.value = false
       isFetch.value = false
       isLoading.value = false
+      finished.value = true // 接口错误时停止加载
       console.log(err)
       emit('setData', [])
     })
@@ -123,6 +129,8 @@ const getData = (isRefresh) => {
 
 // 标记是否是首次执行
 let isFirstWatch = true
+// 保存上一次的搜索参数，用于对比是否真正发生变化
+let lastSearchParams = null
 
 // 计算完成文本，如果无数据则显示重置按钮
 const finishedTextWithResetButton = computed(() => {
@@ -133,21 +141,40 @@ const finishedTextWithResetButton = computed(() => {
   }
 })
 
+// 深度比较两个对象是否相等
+const isSearchParamsEqual = (oldParams, newParams) => {
+  if (!oldParams || !newParams) return false
+  const oldKeys = Object.keys(oldParams)
+  const newKeys = Object.keys(newParams)
+  if (oldKeys.length !== newKeys.length) return false
+  for (const key of oldKeys) {
+    if (oldParams[key] !== newParams[key]) return false
+  }
+  return true
+}
+
 watch(
   () => props.requestData,
   (newVal) => {
-    Object.assign(searchParams, { ...newVal.data })
+    const newSearchParams = { ...newVal.data }
+    Object.assign(searchParams, newSearchParams)
+
     // 首次不加载数据，后续变化才加载
     if (!isFirstWatch) {
-      getData()
+      // 只有当搜索参数真正变化时才触发请求，避免相同参数重复调用
+      if (!isSearchParamsEqual(lastSearchParams, newSearchParams)) {
+        lastSearchParams = newSearchParams
+        getData()
+      }
     } else {
       isFirstWatch = false
+      lastSearchParams = newSearchParams
     }
   },
   {
     deep: true,
-    immediate: true,
-  },
+    immediate: true
+  }
 )
 </script>
 
