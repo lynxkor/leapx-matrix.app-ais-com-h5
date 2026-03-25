@@ -4,7 +4,7 @@ import { NAVIGATOR_TYPE_ANDROID, NAVIGATOR_TYPE_IOS } from './constants'
  * 判断手机类型.
  * @returns {string} 安卓类型返回Android 苹果类型返回Ios，其他返回other.
  */
-export function getNavigatorType() {
+export function getNavigatorType () {
   var u = navigator.userAgent
   // alert(u);
   var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1 // android终端
@@ -18,7 +18,7 @@ export function getNavigatorType() {
   return ''
 }
 
-export function formatDate(date, type) {
+export function formatDate (date, type) {
   const y = date.getFullYear()
   const m = (date.getMonth() + 1).toString().padStart(2, '0')
   const d = date.getDate().toString().padStart(2, '0')
