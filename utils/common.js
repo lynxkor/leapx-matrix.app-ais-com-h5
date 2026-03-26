@@ -14,3 +14,21 @@ export function getSalesConsultantEnum(orgCodeList, salesConfigKey) {
 export function getStoreEnum(organization) {
   return post('/leapx/users/scope/type/org', organization)
 }
+
+/**
+ * 高亮搜索关键字
+ * @param {string} text 原始文本
+ * @param {string} keyword 搜索关键字
+ * @returns {string} 带高亮HTML的文本
+ */
+export function highlightText(text, keyword) {
+  if (!keyword || !text) return text
+  const keywordLower = keyword.toLowerCase()
+  const textLower = text.toLowerCase()
+  const index = textLower.indexOf(keywordLower)
+  if (index === -1) return text
+  const before = text.slice(0, index)
+  const match = text.slice(index, index + keyword.length)
+  const after = text.slice(index + keyword.length)
+  return `${before}<span style="color: #009100; font-weight: 500;">${match}</span>${after}`
+}
