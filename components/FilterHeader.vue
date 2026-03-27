@@ -509,8 +509,41 @@ const resetFilters = () => {
   filterCount.value = 0
 }
 
+// 设置指定筛选条件的值
+const setFilterValue = (key, value) => {
+  // 找到对应的筛选条件
+  const targetFilter = searchList.value.find(item => item.key === key)
+  if (targetFilter) {
+    targetFilter.default = value
+    // 更新高亮状态
+    highlightSerchIcon.value = true
+    // 更新筛选计数
+    updateFilterCount()
+  }
+}
+
+// 更新筛选计数
+const updateFilterCount = () => {
+  let count = 0
+  searchList.value.forEach(filter => {
+    if (filter.nodeType === 'single' || filter.nodeType === 'multiple') {
+      if (Array.isArray(filter.default) && filter.default.length > 0) {
+        count += filter.default.length
+      } else if (filter.default && filter.default !== '') {
+        count++
+      }
+    } else if (filter.nodeType === 'day' || filter.nodeType === 'search') {
+      if (filter.default && filter.default.length > 0) {
+        count++
+      }
+    }
+  })
+  filterCount.value = count
+}
+
 defineExpose({
-  resetFilters
+  resetFilters,
+  setFilterValue
 })
 
 const scanClick = () => {
