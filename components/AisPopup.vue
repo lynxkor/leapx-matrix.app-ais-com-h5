@@ -28,28 +28,28 @@ import { defineProps, defineEmits, ref, watch } from 'vue'
 const props = defineProps({
   show: {
     type: Boolean,
-    default: false,
+    default: false
   },
   title: {
     type: String,
-    default: '',
+    default: ''
   },
   closeable: {
     type: Boolean,
-    default: true,
+    default: true
   },
   closeIcon: {
     type: String,
-    default: 'clear',
+    default: 'clear'
   },
   position: {
     type: String,
-    default: 'bottom',
+    default: 'bottom'
   },
   round: {
     type: Boolean,
-    default: true,
-  },
+    default: true
+  }
 })
 
 const emit = defineEmits(['update:show'])
@@ -61,7 +61,7 @@ watch(
   () => props.show,
   (newValue) => {
     showValue.value = newValue
-  },
+  }
 )
 
 // 监听 showValue 的变化，触发 update:show 事件
