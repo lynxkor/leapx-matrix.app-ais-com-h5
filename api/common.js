@@ -1,4 +1,4 @@
-import { get, post, postJson } from '../../api/request'
+import { get, post, postJson } from './request.js'
 
 /**
  * 车系列表
