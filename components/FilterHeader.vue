@@ -273,38 +273,38 @@ const emit = defineEmits(['search', 'filterSearch', 'scanCb', 'searchFocus', 'se
 const props = defineProps({
   placeholder: {
     type: String,
-    default: '',
+    default: ''
   },
   filterList: {
     type: Array,
     default: () => {
       return []
-    },
+    }
   },
   showScan: {
     type: Boolean,
-    default: true,
+    default: true
   },
   showSort: {
     type: Boolean,
-    default: true,
+    default: true
   },
   isHeaderClick: {
     type: Boolean,
-    default: true,
+    default: true
   },
   // 搜索页面路由配置 - 支持路由名称(name)或路径(path)
   searchPageRoute: {
     type: [String, Object],
-    default: null,
-  },
+    default: null
+  }
 })
 
 watch(
   () => props.isHeaderClick,
   (newVal) => {
     isHeaderScan.value = !newVal
-  },
+  }
 )
 
 const searchList = ref([])
@@ -321,7 +321,7 @@ const choiceDic = reactive({})
 const tempTime = reactive({
   selectType: 'start',
   startTime: [],
-  endTime: [],
+  endTime: []
 })
 const pickVisible = ref(false)
 const highlightSerchIcon = ref(false)
@@ -416,7 +416,7 @@ watch(
       setSearchForm()
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 const focusEvent = () => {
@@ -454,12 +454,12 @@ const goToSearchPage = () => {
     ...routeConfig,
     params: {
       ...routeConfig.params,
-      initialValue: searchValue.value,
+      initialValue: searchValue.value
     },
     query: {
       ...routeConfig.query,
-      from: 'filter-header',
-    },
+      from: 'filter-header'
+    }
   })
 }
 
@@ -475,7 +475,7 @@ const blurEvent = () => {
 const searchEvent = (e) => {
   emit('search', {
     sortOrder: sortOrder.value,
-    searchValue: e,
+    searchValue: e
   })
 }
 
@@ -510,7 +510,7 @@ const resetFilters = () => {
 }
 
 defineExpose({
-  resetFilters,
+  resetFilters
 })
 
 const scanClick = () => {
@@ -524,7 +524,7 @@ const toggleSort = () => {
   sortOrder.value = !sortOrder.value
   emit('search', {
     sortOrder: sortOrder.value,
-    searchValue: searchValue,
+    searchValue: searchValue
   })
 }
 
@@ -541,7 +541,7 @@ const calculateFilterCount = () => {
     const isTimeField = searchList.value.some(
       (item) =>
         item.key === key &&
-        ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType),
+        ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType)
     )
 
     if (value && isTimeField) {
@@ -581,7 +581,7 @@ const calculateFilterCount = () => {
       const isTimeField = searchList.value.some(
         (item) =>
           item.key === key &&
-          ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType),
+          ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(item.nodeType)
       )
 
       if (isTimeField) {
@@ -678,7 +678,7 @@ const handleSearchFocus = (item) => {
   // 向外发出事件，让父组件（页面）可以监听处理
   emit('searchFocus', {
     key: item.key,
-    item: item,
+    item: item
   })
 }
 
@@ -693,7 +693,7 @@ const handleSearchInput = (item, keyword) => {
   emit('searchChange', {
     key: item.key,
     keyword: keyword,
-    item: item,
+    item: item
   })
 }
 
@@ -718,7 +718,7 @@ const clearClick = () => {
 
   // 清除车系时，同步清空车型的options数据
   const modelItem = searchList.value.find(
-    (item) => item.key === 'modelIdList' || item.key === 'modelId',
+    (item) => item.key === 'modelIdList' || item.key === 'modelId'
   )
   if (modelItem) {
     modelItem.options = []
@@ -791,7 +791,7 @@ const showPick = (item) => {
       selectType: 'start',
       columnsType,
       startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(thirtyDaysBefore, type),
-      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type),
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
     })
   } else if (type === 'hour' || type === 'minute' || type === 'second') {
     const now = new Date()
@@ -801,7 +801,7 @@ const showPick = (item) => {
       selectType: 'start',
       columnsType,
       startTime: choiceDic[key] !== '自选' ? choiceDic[key][0] : formatDate(now, type),
-      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type),
+      endTime: choiceDic[key] !== '自选' ? choiceDic[key][1] : formatDate(now, type)
     })
   }
   pickVisible.value = true

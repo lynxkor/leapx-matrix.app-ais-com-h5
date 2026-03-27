@@ -37,24 +37,24 @@ const props = defineProps({
   // 绑定值（支持字符串、数字、数组，兼容不同的使用场景）
   modelValue: {
     type: [String, Number, Array],
-    default: '',
+    default: ''
   },
   // 搜索关键词（用于显示选中的文本）
   searchKeyword: {
     type: String,
-    default: '',
+    default: ''
   },
   // 占位符
   placeholder: {
     type: String,
-    default: '请输入搜索关键词',
+    default: '请输入搜索关键词'
   },
   // 选项列表，格式：[{ label: '显示文本', value: '值' }]
   // 由父组件控制数据，聚焦时父组件传默认10条，搜索时父组件传搜索结果
   options: {
     type: Array,
-    default: () => [],
-  },
+    default: () => []
+  }
 })
 
 const emit = defineEmits([
@@ -64,7 +64,7 @@ const emit = defineEmits([
   'input',
   'clear',
   'focus', // 聚焦时触发，父组件可加载默认数据
-  'onSearch', // 搜索时触发（重命名避免与原生事件冲突），父组件可根据关键词搜索
+  'onSearch' // 搜索时触发（重命名避免与原生事件冲突），父组件可根据关键词搜索
 ])
 
 // 内部搜索关键词
@@ -81,7 +81,7 @@ watch(
   () => props.searchKeyword,
   (newVal) => {
     innerKeyword.value = newVal || ''
-  },
+  }
 )
 
 // 处理聚焦事件 - 展示下拉列表（默认数据）
@@ -151,7 +151,7 @@ const highlightedOptions = computed(() => {
   if (!keyword.trim()) {
     return props.options.map((item) => ({
       ...item,
-      displayLabel: item.label,
+      displayLabel: item.label
     }))
   }
 
@@ -162,12 +162,12 @@ const highlightedOptions = computed(() => {
       const displayLabel = item.label.replace(regex, '<span style="color: #00aa00;">$&</span>')
       return {
         ...item,
-        displayLabel,
+        displayLabel
       }
     } catch (e) {
       return {
         ...item,
-        displayLabel: item.label,
+        displayLabel: item.label
       }
     }
   })
@@ -184,7 +184,7 @@ defineExpose({
     if (props.options.length > 0) {
       showDropdown.value = true
     }
-  },
+  }
 })
 </script>
 

@@ -43,7 +43,7 @@ watch(
       globalStore.setTitle(route.meta.title)
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 const keepAliveRouteNames = computed(() => {
   return router
@@ -55,7 +55,7 @@ const keepAliveRouteNames = computed(() => {
 console.log('keep', keepAliveRouteNames, route)
 const goDispatch = () => {
   router.push({
-    path: '/autoDispatchSetting/index',
+    path: '/autoDispatchSetting/index'
     // query: {
     //   id: 'asd14a56s4d56as',
     // },
