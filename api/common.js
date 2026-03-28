@@ -119,3 +119,11 @@ export function getOwnerTree(data) {
 export function storePage(data) {
   return postJson('network/app/user/store/page', data)
 }
+
+/**
+ * 枚举通用接口
+  * @param {*} data
+  */
+export function getEnum(code, size) {
+  return postJson('/datacenter/web/common/commonDictValue/get', { dictType: code, pageSize: size || 200 })
+}
