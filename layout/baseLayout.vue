@@ -1,6 +1,6 @@
 <template>
   <div class="base-container">
-    <header style="z-index: 5000" v-if="!route.meta?.hideHeader">
+    <header style="z-index: 999" v-if="!route.meta?.hideHeader">
       <van-nav-bar :title="globalStore.title" left-arrow @click-left="goBack">
         <template #title>
           <div class="custom-title">

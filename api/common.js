@@ -127,3 +127,11 @@ export function storePage(data) {
 export function getEnum(code, size) {
   return postJson('/datacenter/web/common/commonDictValue/get', { dictType: code, pageSize: size || 200 })
 }
+
+/**
+ * 获取当前登录用户信息
+  * @param {*} data
+  */
+export function getLoginInfo(params) {
+  return postJson('/leapx/users/current/login/info', params, 'leapx')
+};
