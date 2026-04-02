@@ -1,7 +1,7 @@
 <template>
   <div class="base-container">
     <header style="z-index: 5000" v-if="!route.meta?.hideHeader">
-      <van-nav-bar :title="globalStore.title" left-arrow @click-left="goBack">
+      <van-nav-bar :title="globalStore.title" left-arrow @click-left="handleBack">
         <template #title>
           <div class="custom-title">
             <span v-html="globalStore.title"></span>
@@ -15,9 +15,19 @@
     <div class="layout-content">
       <RouterView #default="{ Component, route }">
         <KeepAlive :include="keepAliveRouteNames">
-          <component :is="Component" :key="route.name" v-if="route.meta?.keepAlive" />
+          <component
+            :is="Component"
+            :key="route.name"
+            v-if="route.meta?.keepAlive"
+            ref="currentRouteComponent"
+          />
         </KeepAlive>
-        <component v-if="!route.meta?.keepAlive" :is="Component" :key="route.name" />
+        <component
+          v-if="!route.meta?.keepAlive"
+          :is="Component"
+          :key="route.name"
+          ref="currentRouteComponent"
+        />
       </RouterView>
     </div>
   </div>
@@ -27,12 +37,45 @@
 import { RouterView, useRouter, useRoute } from 'vue-router'
 import { ref, computed, watch } from 'vue'
 import { useGlobalStore } from '@/stores/global'
-import { goBack } from '../utils/app'
 
 const globalStore = useGlobalStore()
 
 const router = useRouter()
 const route = useRoute()
+
+// 当前路由组件实例
+const currentRouteComponent = ref < any > (null)
+
+// 处理返回按钮点击
+const handleBack = () => {
+  // 检查当前路由组件是否定义了 onBeforeBack 方法
+  if (currentRouteComponent.value && typeof currentRouteComponent.value.onBeforeBack === 'function') {
+    currentRouteComponent.value.onBeforeBack()
+  } else {
+    // 默认返回行为
+    if (window.history.length > 1) {
+      window.history.go(-1)
+    } else {
+      outWebview()
+    }
+  }
+}
+
+// 退出webview
+const outWebview = () => {
+  const navigatorType = navigator.userAgent.toLowerCase()
+  if (navigatorType.includes('android')) {
+    if (window.Android && window.Android.goback) {
+      window.Android.goback()
+    }
+  } else if (navigatorType.includes('iphone') || navigatorType.includes('ipad')) {
+    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.revert) {
+      window.webkit.messageHandlers.revert.postMessage(null)
+    }
+  } else {
+    window.close()
+  }
+}
 
 // 监听路由变化，当从隐藏头部的页面返回时恢复标题
 watch(
@@ -77,5 +120,11 @@ const goDispatch = () => {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 </style>
