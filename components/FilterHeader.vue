@@ -25,7 +25,7 @@
         <span class="toggle-span">按照日期{{ sortOrder ? '升序' : '降序' }}</span>
       </div>
 
-      <div class="more-condition-container">
+      <div v-if="showFilter" class="more-condition-container">
         <img
           :class="
             highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'
@@ -297,6 +297,10 @@ const props = defineProps({
   searchPageRoute: {
     type: [String, Object],
     default: null
+  },
+  showFilter: {
+    type: Boolean,
+    default: true
   }
 })
 
