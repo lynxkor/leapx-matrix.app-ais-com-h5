@@ -24,7 +24,6 @@
         <img class="toggle-icon" :src="sortOrder ? sortDownIcon : sortUpIcon" />
         <span class="toggle-span">按照日期{{ sortOrder ? '升序' : '降序' }}</span>
       </div>
-
       <div v-if="showFilter" class="more-condition-container">
         <img
           :class="
@@ -298,7 +297,7 @@ const props = defineProps({
     type: [String, Object],
     default: null
   },
-  showFilter: {
+  showFilter: { // 是否显示筛选按钮
     type: Boolean,
     default: true
   }
