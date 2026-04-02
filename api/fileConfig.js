@@ -35,3 +35,7 @@ export function getAttachmentList(data) {
 export function deleteAttachmentConfig(data) {
   return filePost('/app/attachment/attachment/delete', data)
 }
+// 通过URL上传文件
+export function uploadFileByUrl(data) {
+  return filePost('/fileService/uploadByUrl', data)
+}
