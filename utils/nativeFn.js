@@ -31,3 +31,11 @@ export function callPhone(phone) {
     window.webkit.messageHandlers.outBoundCall.postMessage(phone)
   }
 }
+// 选择图片支持相册和拍照
+export function getAppImgLimit(limitSize) {
+  if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
+    window.Android.selectImageLimit(limitSize)
+  } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
+    window.webkit.messageHandlers.selectImageLimit.postMessage(limitSize)
+  }
+}
