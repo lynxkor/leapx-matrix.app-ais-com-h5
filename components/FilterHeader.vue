@@ -650,9 +650,12 @@ const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
   if (_type === 'single') {
     if (searchForm[_key] !== _value) {
       searchForm[_key] = _value
+    } else {
+      // 如果点击已选中的项，取消选择
+      searchForm[_key] = ''
     }
     if (_callBack) {
-      _callBack(_value)
+      _callBack(searchForm[_key])
     }
   } else if (_type === 'multiple') {
     let arr = searchForm[_key]
