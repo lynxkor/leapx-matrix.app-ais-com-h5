@@ -6,7 +6,7 @@ import { outWebview } from '@/libs/utils/app'
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL, // 从环境变量读取基础 URL
+  baseURL: window.APP_AIS_H5_CONFIG.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE_URL, // 从环境变量读取基础 URL
   timeout: 10000 // 超时时间
 })
 
