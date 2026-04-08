@@ -139,6 +139,6 @@ export function getLoginInfo(params) {
  * 获取字典
  * @param {Object} data
  */
-export function getEnum(code) {
+export function getMaintainEnum(code) {
   return postJson(`maintain/web/common/enum/${code}`)
 }
