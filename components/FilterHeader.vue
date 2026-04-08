@@ -24,8 +24,7 @@
         <img class="toggle-icon" :src="sortOrder ? sortDownIcon : sortUpIcon" />
         <span class="toggle-span">按照日期{{ sortOrder ? '升序' : '降序' }}</span>
       </div>
-
-      <div class="more-condition-container">
+      <div v-if="showFilter" class="more-condition-container">
         <img
           :class="
             highlightSerchIcon ? 'more-condition-btn more-condition-btn-hl' : 'more-condition-btn'
@@ -297,6 +296,10 @@ const props = defineProps({
   searchPageRoute: {
     type: [String, Object],
     default: null
+  },
+  showFilter: { // 是否显示筛选按钮
+    type: Boolean,
+    default: true
   }
 })
 
@@ -647,9 +650,12 @@ const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
   if (_type === 'single') {
     if (searchForm[_key] !== _value) {
       searchForm[_key] = _value
+    } else {
+      // 如果点击已选中的项，取消选择
+      searchForm[_key] = ''
     }
     if (_callBack) {
-      _callBack(_value)
+      _callBack(searchForm[_key])
     }
   } else if (_type === 'multiple') {
     let arr = searchForm[_key]

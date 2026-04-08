@@ -46,6 +46,15 @@ const props = defineProps({
 
 const emit = defineEmits(['setData', 'resetFilters', 'onError'])
 
+defineExpose({
+  reset: () => {
+    finished.value = false
+    loading.value = false
+    isFetch.value = false
+    getData(true)
+  }
+})
+
 // 上拉请求中
 const loading = ref(false)
 // 是否还有更多数据
@@ -159,10 +168,10 @@ const getData = (isRefresh) => {
     })
 }
 
-// 标记是否是首次执行
-let isFirstWatch = true
+// 标记是否是首次执行 - 使用 ref 确保每个组件实例独立
+const isFirstWatch = ref(true)
 // 保存上一次的搜索参数，用于对比是否真正发生变化
-let lastSearchParams = null
+const lastSearchParams = ref(null)
 
 // 计算完成文本，如果无数据则显示重置按钮
 const finishedTextWithResetButton = computed(() => {
@@ -192,15 +201,15 @@ watch(
     Object.assign(searchParams, newSearchParams)
 
     // 首次不加载数据，后续变化才加载
-    if (!isFirstWatch) {
+    if (!isFirstWatch.value) {
       // 只有当搜索参数真正变化时才触发请求，避免相同参数重复调用
-      if (!isSearchParamsEqual(lastSearchParams, newSearchParams)) {
-        lastSearchParams = newSearchParams
+      if (!isSearchParamsEqual(lastSearchParams.value, newSearchParams)) {
+        lastSearchParams.value = newSearchParams
         getData()
       }
     } else {
-      isFirstWatch = false
-      lastSearchParams = newSearchParams
+      isFirstWatch.value = false
+      lastSearchParams.value = newSearchParams
     }
   },
   {

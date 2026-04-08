@@ -1,4 +1,4 @@
-import { get, post, postJson } from '../../api/request'
+import { get, post, postJson } from './request.js'
 
 /**
  * 车系列表
@@ -119,6 +119,22 @@ export function getOwnerTree(data) {
 export function storePage(data) {
   return postJson('network/app/user/store/page', data)
 }
+
+/**
+ * 枚举通用接口
+  * @param {*} data
+  */
+export function getEnum(code, size) {
+  return postJson('/datacenter/web/common/commonDictValue/get', { dictType: code, pageSize: size || 200 })
+}
+
+/**
+ * 获取当前登录用户信息
+  * @param {*} data
+  */
+export function getLoginInfo(params) {
+  return postJson('/leapx/users/current/login/info', params, 'leapx')
+};
 /**
  * 获取字典
  * @param {Object} data
