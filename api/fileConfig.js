@@ -39,3 +39,4 @@ export function deleteAttachmentConfig(data) {
 export function uploadFileByUrl(data) {
   return filePost('/fileService/uploadByUrl', data)
 }
+

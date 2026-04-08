@@ -135,3 +135,10 @@ export function getEnum(code, size) {
 export function getLoginInfo(params) {
   return postJson('/leapx/users/current/login/info', params, 'leapx')
 };
+/**
+ * 获取字典
+ * @param {Object} data
+ */
+export function getMaintainEnum(code) {
+  return postJson(`maintain/web/common/enum/${code}`)
+}
