@@ -52,6 +52,19 @@ defineExpose({
     loading.value = false
     isFetch.value = false
     getData(true)
+  },
+  // 手动触发搜索，传入参数后执行查询
+  search: (params) => {
+    finished.value = false
+    loading.value = false
+    isFetch.value = false
+    // 更新搜索参数
+    if (params) {
+      Object.assign(searchParams, params)
+      // 保存当前参数用于下次比较
+      lastSearchParams.value = JSON.parse(JSON.stringify(params))
+    }
+    getData(true)
   }
 })
 
@@ -189,7 +202,21 @@ const isSearchParamsEqual = (oldParams, newParams) => {
   const newKeys = Object.keys(newParams)
   if (oldKeys.length !== newKeys.length) return false
   for (const key of oldKeys) {
-    if (oldParams[key] !== newParams[key]) return false
+    const oldVal = oldParams[key]
+    const newVal = newParams[key]
+
+    // 处理数组类型
+    if (Array.isArray(oldVal) && Array.isArray(newVal)) {
+      if (oldVal.length !== newVal.length) return false
+      // 比较数组内容（假设是基本类型数组）
+      for (let i = 0; i < oldVal.length; i++) {
+        if (oldVal[i] !== newVal[i]) return false
+      }
+      continue
+    }
+
+    // 处理普通值
+    if (oldVal !== newVal) return false
   }
   return true
 }
@@ -197,7 +224,8 @@ const isSearchParamsEqual = (oldParams, newParams) => {
 watch(
   () => props.requestData,
   (newVal) => {
-    const newSearchParams = { ...newVal.data }
+    // 使用深拷贝确保每次比较的都是全新对象，避免数组引用相同导致比较失效
+    const newSearchParams = JSON.parse(JSON.stringify(newVal.data))
     Object.assign(searchParams, newSearchParams)
 
     // 首次不加载数据，后续变化才加载
