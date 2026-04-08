@@ -44,7 +44,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['setData', 'resetFilters'])
+const emit = defineEmits(['setData', 'resetFilters', 'onError'])
 
 // 上拉请求中
 const loading = ref(false)
@@ -106,6 +106,9 @@ const getData = (isRefresh) => {
           current = data.current
           total = data.total
           hasPagination = true
+        } else if (data && data.historyList) {
+          records = data.historyList
+          hasPagination = false
         }
 
         emit('setData', {
@@ -117,7 +120,10 @@ const getData = (isRefresh) => {
         if (!hasPagination) {
           // 非分页接口，一次加载完毕
           finished.value = true
-        } else if (records.length === 0 || current * (data.pageSize || searchParams.pageSize) >= total) {
+        } else if (
+          records.length === 0 ||
+          current * (data.pageSize || searchParams.pageSize) >= total
+        ) {
           // 分页接口，判断是否还有更多数据
           finished.value = true
         } else {
@@ -131,6 +137,7 @@ const getData = (isRefresh) => {
         finished.value = true
         isFetch.value = false
         isLoading.value = false
+        emit('onError', res.message || res.msg || '请求失败')
         emit('setData', [])
       }
     })
@@ -141,6 +148,7 @@ const getData = (isRefresh) => {
       isLoading.value = false
       finished.value = true // 接口错误时停止加载
       console.log(err)
+      emit('onError', err.message || '请求失败')
       emit('setData', [])
     })
     .finally(() => {

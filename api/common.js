@@ -119,3 +119,10 @@ export function getOwnerTree(data) {
 export function storePage(data) {
   return postJson('network/app/user/store/page', data)
 }
+/**
+ * 获取字典
+ * @param {Object} data
+ */
+export function getEnum(code) {
+  return postJson(`maintain/web/common/enum/${code}`)
+}
