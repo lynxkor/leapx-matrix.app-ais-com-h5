@@ -50,14 +50,17 @@ const currentRouteComponent = ref < any > (null)
 const handleBack = () => {
   // 检查当前路由组件是否定义了 onBeforeBack 方法
   if (currentRouteComponent.value && typeof currentRouteComponent.value.onBeforeBack === 'function') {
-    currentRouteComponent.value.onBeforeBack()
-  } else {
-    // 默认返回行为
-    if (window.history.length > 1) {
-      window.history.go(-1)
-    } else {
-      outWebview()
+    const result = currentRouteComponent.value.onBeforeBack()
+    // 如果返回 false，阻止默认返回行为
+    if (result === false) {
+      return
     }
+  }
+  // 默认返回行为
+  if (window.history.length > 1) {
+    window.history.go(-1)
+  } else {
+    outWebview()
   }
 }
 
