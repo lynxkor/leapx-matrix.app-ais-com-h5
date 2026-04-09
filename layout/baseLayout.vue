@@ -57,7 +57,10 @@ const handleBack = () => {
     }
   }
   // 默认返回行为
-  if (window.history.length > 1) {
+  if (route.meta?.closeWindow === 1) {
+    // 已售上牌车辆单独加判断
+    outWebview()
+  } else if (window.history.length > 1) {
     window.history.go(-1)
   } else {
     outWebview()
