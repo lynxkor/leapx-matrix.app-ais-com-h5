@@ -117,6 +117,7 @@
                     @select="handleSearchSelect(item, $event)"
                     @focus="handleSearchFocus(item)"
                     @on-search="handleSearchInput(item, $event)"
+                    @clear="handleSearchClear(item)"
                   />
                 </template>
                 <template
@@ -568,7 +569,7 @@ const toggleSort = () => {
 const calculateFilterCount = () => {
   let count = 0
   const processedKeys = new Set() // 用于跟踪已处理的键，防止重复计算
-
+  console.log('searchList.value', searchForm)
   // 遍历 searchForm 中的所有字段
   for (const key in searchForm) {
     const value = searchForm[key]
@@ -697,12 +698,27 @@ const toggleOptionValue = (_key, _value, _type, _callBack, _resetDic) => {
 const handleSearchSelect = (item, option) => {
   // 设置选中值
   searchForm[item.key] = option.value
+  // 同步更新 item.default，避免 filterCount 计算错误
+  item.default = option.value
+  // 同步更新 searchKeyword 显示选中文本
+  item.searchKeyword = option.label
 
   // 执行回调
   if (item.callBack) {
     item.callBack(option.value)
   }
 
+  // 更新筛选条件数量
+  calculateFilterCount()
+}
+
+// 搜索下拉组件 - 清空事件
+const handleSearchClear = (item) => {
+  // searchForm[item.key] 已由 v-model 清空
+  // 同步清空 item.default 和 searchKeyword
+  item.default = ''
+  item.searchKeyword = ''
+  searchForm[item.key] = ''
   // 更新筛选条件数量
   calculateFilterCount()
 }
