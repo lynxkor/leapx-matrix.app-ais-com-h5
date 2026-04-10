@@ -33,7 +33,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { RouterView, useRouter, useRoute } from 'vue-router'
 import { ref, computed, watch } from 'vue'
 import { useGlobalStore } from '@/stores/global'
@@ -44,7 +44,7 @@ const router = useRouter()
 const route = useRoute()
 
 // 当前路由组件实例
-const currentRouteComponent = ref < any > (null)
+const currentRouteComponent = ref(null)
 
 // 处理返回按钮点击
 const handleBack = () => {
