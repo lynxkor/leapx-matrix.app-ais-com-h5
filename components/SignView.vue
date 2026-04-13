@@ -33,7 +33,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, defineProps, defineEmits } from 'vue'
 // import Oss from 'ali-oss'
-import { showToast, showConfirmDialog } from 'vant'
+import { showToast, showConfirmDialog, showLoadingToast, closeToast } from 'vant'
 // import { getOssResponse } from '@/api/upload/index.js'
 // import { montageOssName, isDevOrPro } from '@/utils'
 // import 'vant/lib/index.css'
@@ -61,6 +61,7 @@ const points = ref([])
 const isDown = ref(false)
 const show = ref(false)
 const singdeg = ref(0)
+const isSubmitting = ref(false)
 
 // 生命周期
 onMounted(() => {
@@ -230,6 +231,9 @@ const submit = async() => {
   if (!isDown.value) {
     return showToast('签名不可为空')
   }
+  if (isSubmitting.value) {
+    return
+  }
   showConfirmDialog({
     message: '确认签署交车单? ',
     width: '295px',
@@ -238,6 +242,9 @@ const submit = async() => {
     className: 'sign-confirm-dialog'
   })
     .then(async() => {
+      if (isSubmitting.value) {
+        return
+      }
       // 获取签名图片的 base64 数据
       // const canvas = myCanvas.value
       // const signatureImageUrl = canvas.toDataURL('image/png')
@@ -249,6 +256,8 @@ const submit = async() => {
 
       // 调用确认签署接口
       try {
+        isSubmitting.value = true
+        showLoadingToast({ message: '签署中...', forbidClick: true, duration: 0 })
         const res = await confirmSign({
           deliveryOrderId: route.query.deliveryOrderId,
           signatureImageUrl: signatureImageUrl,
@@ -270,6 +279,9 @@ const submit = async() => {
       } catch (error) {
         console.error('签名失败:', error)
         showToast(error?.msg || '签名失败')
+      } finally {
+        isSubmitting.value = false
+        closeToast()
       }
     })
     .catch(() => {
