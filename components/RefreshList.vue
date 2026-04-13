@@ -89,6 +89,10 @@ const isLoading = ref(false)
 
 const onRefresh = () => {
   finished.value = false
+  // 下拉刷新时同步最新的请求参数（如当前tab状态值）
+  if (props.requestData && props.requestData.data) {
+    Object.assign(searchParams, JSON.parse(JSON.stringify(props.requestData.data)))
+  }
   // 下拉需要手动刷新列表
   getData(true)
 }
