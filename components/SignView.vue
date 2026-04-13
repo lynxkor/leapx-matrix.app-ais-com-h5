@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, defineProps, defineEmits } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 // import Oss from 'ali-oss'
 import { showToast, showConfirmDialog, showLoadingToast, closeToast } from 'vant'
 // import { getOssResponse } from '@/api/upload/index.js'
@@ -43,7 +43,6 @@ import { confirmSign } from '@/api/vehretail'
 
 const route = useRoute()
 const router = useRouter()
-const emit = defineEmits(['submit'])
 
 // 引用
 const signWrap = ref(null)
@@ -55,13 +54,26 @@ const stageInfo = ref('')
 const hisSingdeg = ref('')
 const startX = ref(0)
 const startY = ref(0)
-const moveY = ref(0)
-const endX = ref(0)
 const points = ref([])
 const isDown = ref(false)
-const show = ref(false)
 const singdeg = ref(0)
 const isSubmitting = ref(false)
+
+const getCanvasPoint = (ev) => {
+  const canvas = myCanvas.value
+  const touch = ev.touches[0] || ev.changedTouches[0]
+  if (!canvas || !touch) {
+    return null
+  }
+
+  const rect = canvas.getBoundingClientRect()
+  stageInfo.value = rect
+
+  return {
+    x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+    y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+  }
+}
 
 // 生命周期
 onMounted(() => {
@@ -153,69 +165,56 @@ onMounted(() => {
 const touchStart = (ev) => {
   ev.preventDefault()
   if (ev.touches.length === 1) {
-    isDown.value = true
-    const obj = {
-      x: ev.targetTouches[0].clientX,
-      y: ev.targetTouches[0].clientY
+    const point = getCanvasPoint(ev)
+    if (!point) {
+      return
     }
-    startX.value = obj.x
-    startY.value = obj.y
+    isDown.value = true
+    startX.value = point.x
+    startY.value = point.y
     if (canvasTxt.value) {
       canvasTxt.value.beginPath()
       canvasTxt.value.moveTo(startX.value, startY.value)
-      canvasTxt.value.lineTo(obj.x, obj.y)
+      canvasTxt.value.lineTo(point.x, point.y)
       canvasTxt.value.stroke()
       canvasTxt.value.closePath()
     }
-    points.value.push(obj)
+    points.value.push(point)
   }
 }
 
 const touchmove = (ev) => {
   ev.preventDefault()
-  const canvas = myCanvas.value
-  if (canvas) {
-    stageInfo.value = canvas.getBoundingClientRect()
+  if (canvasTxt.value) {
+    canvasTxt.value.lineWidth = 2
+  }
+  if (ev.touches.length === 1) {
+    const point = getCanvasPoint(ev)
+    if (!point) {
+      return
+    }
     if (canvasTxt.value) {
-      canvasTxt.value.lineWidth = 2
+      canvasTxt.value.beginPath()
+      canvasTxt.value.moveTo(startX.value, startY.value)
+      canvasTxt.value.lineTo(point.x, point.y)
+      canvasTxt.value.stroke()
+      canvasTxt.value.closePath()
     }
-    if (ev.touches.length === 1) {
-      const obj = {
-        x: ev.targetTouches[0].clientX - stageInfo.value.left,
-        y: ev.targetTouches[0].clientY - stageInfo.value.top
-      }
-      if (canvasTxt.value) {
-        canvasTxt.value.beginPath()
-        canvasTxt.value.moveTo(startX.value, startY.value)
-        canvasTxt.value.lineTo(obj.x, obj.y)
-        canvasTxt.value.stroke()
-        canvasTxt.value.closePath()
-      }
-      startY.value = obj.y
-      startX.value = obj.x
-      points.value.push(obj)
-    }
+    startY.value = point.y
+    startX.value = point.x
+    points.value.push(point)
   }
 }
 
 const touchend = (ev) => {
   ev.preventDefault()
-  const canvas = myCanvas.value
-  if (canvas) {
-    stageInfo.value = canvas.getBoundingClientRect()
-    if (ev.touches.length === 1) {
-      const obj = {
-        x: ev.targetTouches[0].clientX - stageInfo.value.left,
-        y: ev.targetTouches[0].clientY - stageInfo.value.top
-      }
-      if (canvasTxt.value) {
-        canvasTxt.value.beginPath()
-        canvasTxt.value.moveTo(startX.value, startY.value)
-        canvasTxt.value.lineTo(obj.x, obj.y)
-        canvasTxt.value.stroke()
-        canvasTxt.value.closePath()
-      }
-    }
+  const point = getCanvasPoint(ev)
+  if (point && canvasTxt.value) {
+    canvasTxt.value.beginPath()
+    canvasTxt.value.moveTo(startX.value, startY.value)
+    canvasTxt.value.lineTo(point.x, point.y)
+    canvasTxt.value.stroke()
+    canvasTxt.value.closePath()
   }
 }
 
