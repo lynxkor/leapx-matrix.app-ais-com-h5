@@ -51,6 +51,13 @@ defineExpose({
     finished.value = false
     loading.value = false
     isFetch.value = false
+    // 重置 isFetch 状态后，确保可以发起请求
+    // 使用最新传入的 data 参数
+    if (props.requestData && props.requestData.data) {
+      const newParams = JSON.parse(JSON.stringify(props.requestData.data))
+      Object.assign(searchParams, newParams)
+      lastSearchParams.value = newParams
+    }
     getData(true)
   },
   // 手动触发搜索，传入参数后执行查询
@@ -98,6 +105,10 @@ const onLoad = () => {
 }
 
 const getData = (isRefresh) => {
+  // 如果正在请求中，不重复请求
+  if (isFetch.value) {
+    return
+  }
   if (isRefresh) {
     searchParams.pageNum = 1
     isLoading.value = true
@@ -160,7 +171,7 @@ const getData = (isRefresh) => {
         isFetch.value = false
         isLoading.value = false
         emit('onError', res.message || res.msg || '请求失败')
-        emit('setData', [])
+        emit('setData', { list: [], isRefresh: true })
       }
     })
     .catch((err) => {
@@ -171,7 +182,7 @@ const getData = (isRefresh) => {
       finished.value = true // 接口错误时停止加载
       console.log(err)
       emit('onError', err.message || '请求失败')
-      emit('setData', [])
+      emit('setData', { list: [], isRefresh: true })
     })
     .finally(() => {
       loading.value = false
@@ -222,10 +233,8 @@ const isSearchParamsEqual = (oldParams, newParams) => {
 }
 
 watch(
-  () => props.requestData,
-  (newVal) => {
-    // 使用深拷贝确保每次比较的都是全新对象，避免数组引用相同导致比较失效
-    const newSearchParams = JSON.parse(JSON.stringify(newVal.data))
+  () => JSON.parse(JSON.stringify(props.requestData.data)),
+  (newSearchParams) => {
     Object.assign(searchParams, newSearchParams)
 
     // 首次不加载数据，后续变化才加载
@@ -233,7 +242,8 @@ watch(
       // 只有当搜索参数真正变化时才触发请求，避免相同参数重复调用
       if (!isSearchParamsEqual(lastSearchParams.value, newSearchParams)) {
         lastSearchParams.value = newSearchParams
-        getData()
+        // 参数变化时显示loading效果
+        getData(true)
       }
     } else {
       isFirstWatch.value = false
