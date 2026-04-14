@@ -5,8 +5,11 @@
     :closeable="closeable"
     :close-icon="closeIcon"
     :position="position"
+    :overlay="overlay"
+    :lock-scroll="lockScroll"
     close-icon-position="top-left"
     :round="round"
+    :style="popupStyle"
   >
     <div class="popup-content">
       <h3 v-if="title" class="popup-title">{{ title }}</h3>
@@ -49,6 +52,18 @@ const props = defineProps({
   round: {
     type: Boolean,
     default: true
+  },
+  overlay: {
+    type: Boolean,
+    default: true
+  },
+  lockScroll: {
+    type: Boolean,
+    default: true
+  },
+  popupStyle: {
+    type: [Object, String],
+    default: () => ({})
   }
 })
 
