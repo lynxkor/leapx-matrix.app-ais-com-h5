@@ -5,7 +5,7 @@
         >重写</ais-button
       >
       <ais-button
-        :disabled="!isDown"
+        :disabled="!isDown || props.submitting"
         class="confirm_sign"
         size="large"
         type="primary"
@@ -33,16 +33,18 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 // import Oss from 'ali-oss'
-import { showToast, showConfirmDialog, showLoadingToast, closeToast } from 'vant'
+import { showToast, showConfirmDialog } from 'vant'
 // import { getOssResponse } from '@/api/upload/index.js'
 // import { montageOssName, isDevOrPro } from '@/utils'
 // import 'vant/lib/index.css'
 import AisButton from '@/components/AisButton.vue'
-import { useRoute, useRouter } from 'vue-router'
-import { confirmSign } from '@/api/vehretail'
-
-const route = useRoute()
-const router = useRouter()
+const props = defineProps({
+  submitting: {
+    type: Boolean,
+    default: false
+  }
+})
+const emit = defineEmits(['submit'])
 
 // 引用
 const signWrap = ref(null)
@@ -57,7 +59,6 @@ const startY = ref(0)
 const points = ref([])
 const isDown = ref(false)
 const singdeg = ref(0)
-const isSubmitting = ref(false)
 
 const getCanvasPoint = (ev) => {
   const canvas = myCanvas.value
@@ -222,6 +223,7 @@ const overwrite = () => {
   if (canvasTxt.value && myCanvas.value) {
     canvasTxt.value.clearRect(0, 0, myCanvas.value.width, myCanvas.value.height)
   }
+  points.value = []
   isDown.value = false
 }
 
@@ -230,7 +232,7 @@ const submit = async() => {
   if (!isDown.value) {
     return showToast('签名不可为空')
   }
-  if (isSubmitting.value) {
+  if (props.submitting) {
     return
   }
   showConfirmDialog({
@@ -240,48 +242,14 @@ const submit = async() => {
     cancelButtonColor: '#222222',
     className: 'sign-confirm-dialog'
   })
-    .then(async() => {
-      if (isSubmitting.value) {
+    .then(() => {
+      if (props.submitting) {
         return
       }
-      // 获取签名图片的 base64 数据
-      // const canvas = myCanvas.value
-      // const signatureImageUrl = canvas.toDataURL('image/png')
-      const signatureImageUrl = 'https://linxiaopao-sit.leapmotor.com/2c070137-2a12-4d3a-8d6d-31c3c4782ce6/1760603473510_vehdeliverysign.png?ver=-1732284362'
-      // 获取确认项树形结构数据
-      const confirmItemTree = route.query.confirmItemTree
-        ? JSON.parse(route.query.confirmItemTree)
-        : []
-
-      // 调用确认签署接口
-      try {
-        isSubmitting.value = true
-        showLoadingToast({ message: '签署中...', forbidClick: true, duration: 0 })
-        const res = await confirmSign({
-          deliveryOrderId: route.query.deliveryOrderId,
-          signatureImageUrl: signatureImageUrl,
-          confirmItemTree: confirmItemTree
-        })
-        if (res?.code === 200) {
-          // 返回交车完成页面
-          router.replace({
-            path: '/delivery/confirm',
-            query: {
-              id: route.query.deliveryOrderId,
-              step: 3,
-              isDetail: true
-            }
-          })
-        } else {
-          showToast(res?.msg || '签名失败')
-        }
-      } catch (error) {
-        console.error('签名失败:', error)
-        showToast(error?.msg || '签名失败')
-      } finally {
-        isSubmitting.value = false
-        closeToast()
-      }
+      emit('submit', {
+        signatureImageData: myCanvas.value?.toDataURL('image/png') || '',
+        points: [...points.value]
+      })
     })
     .catch(() => {
       // on cancel
