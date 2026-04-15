@@ -4,11 +4,11 @@
  * @param {string} type - 文件类型: 'image' | 'video' | 'pdf' | 'excel' | 'word' | 'ppt' | 'text' | 'zip'
  * @returns {boolean} 是否为指定类型
  */
-export function isFileType (file, type) {
-  if (!file) return false;
+export function isFileType(file, type) {
+  if (!file) return false
 
-  const fileType = (file.fileType || '').toLowerCase();
-  const fileName = (file.fileName || '').toLowerCase();
+  const fileType = (file.fileType || '').toLowerCase()
+  const fileName = (file.fileName || '').toLowerCase()
 
   const config = {
     image: {
@@ -47,16 +47,16 @@ export function isFileType (file, type) {
       types: ['application/vnd.rar', 'application/x-rar-compressed'],
       extensions: ['.rar']
     }
-  };
+  }
 
-  const rule = config[type];
-  if (!rule) return false;
+  const rule = config[type]
+  if (!rule) return false
 
   // 先从 MIME 类型或自定义 fileType 字段判断
   if (rule.types.some(t => fileType.includes(t))) {
-    return true;
+    return true
   }
 
   // 再从文件扩展名判断
-  return rule.extensions.some(ext => fileName.endsWith(ext));
+  return rule.extensions.some(ext => fileName.endsWith(ext))
 }
