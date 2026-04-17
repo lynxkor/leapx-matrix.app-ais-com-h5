@@ -239,6 +239,10 @@ const isSearchParamsEqual = (oldParams, newParams) => {
 watch(
   () => JSON.parse(JSON.stringify(props.requestData.data)),
   (newSearchParams) => {
+    // 先清空 searchParams，再赋值新参数，确保删除的字段不会保留
+    Object.keys(searchParams).forEach(key => {
+      delete searchParams[key]
+    })
     Object.assign(searchParams, newSearchParams)
 
     // 首次不加载数据，后续变化才加载
