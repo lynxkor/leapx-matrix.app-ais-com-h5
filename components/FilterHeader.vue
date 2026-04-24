@@ -376,6 +376,8 @@ onMounted(() => {
 })
 
 const setSearchForm = () => {
+  // 先清空 multipleList，确保每次都是重新初始化
+  multipleList.value = []
   searchList.value.forEach((item) => {
     let value
     if (item.nodeType === 'single') {
@@ -519,10 +521,25 @@ const setFilterValue = (key, value) => {
   const targetFilter = searchList.value.find(item => item.key === key)
   if (targetFilter) {
     targetFilter.default = value
+    // 同步更新 searchForm，确保筛选面板能正确显示选中状态
+    // 对于 multiple 类型，或者当 targetFilter.nodeType === 'multiple' 时，确保值是数组
+    if (targetFilter.nodeType === 'multiple') {
+      const arrValue = Array.isArray(value) ? [...value] : value !== undefined && value !== null ? [value] : []
+      searchForm[key] = [...arrValue]
+      // 确保 multipleList 中有这个 key
+      if (!multipleList.value.includes(key)) {
+        multipleList.value.push(key)
+      }
+    } else {
+      searchForm[key] = value
+    }
     // 更新高亮状态
     highlightSerchIcon.value = true
     // 更新筛选计数
     updateFilterCount()
+  } else {
+    // 如果没找到对应的筛选条件（可能是还未初始化），先缓存值
+    console.warn(`setFilterValue: 未找到 key=${key} 的筛选条件，可能还未初始化`)
   }
 }
 
