@@ -1,7 +1,11 @@
 <template>
-  <div class="base-container">
-    <header style="z-index: 5000" v-if="!route.meta?.hideHeader">
-      <van-nav-bar :title="globalStore.title" left-arrow @click-left="handleBack">
+  <div class="base-container" :style="{ marginTop: shouldShowSafeIosArea ? safeAreaTop : '0px' }">
+    <header style="z-index: 5000;" v-if="!route.meta?.hideHeader">
+      <van-nav-bar 
+        :title="globalStore.title" 
+        left-arrow 
+        @click-left="handleBack"
+      >
         <template #title>
           <div class="custom-title">
             <span v-html="globalStore.title"></span>
@@ -35,7 +39,7 @@
 
 <script setup>
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useGlobalStore } from '@/stores/global'
 
 const globalStore = useGlobalStore()
@@ -45,6 +49,83 @@ const route = useRoute()
 
 // 当前路由组件实例
 const currentRouteComponent = ref(null)
+
+// 安全区域顶部距离
+const safeAreaTop = ref('0px')
+
+const isIOS = computed(() => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return /iphone|ipad|ipod/.test(userAgent)
+})
+const needsSafeArea = computed(() => {
+  const targetRoutes = [
+    '/awaitingDeliveryAppointment/list',
+    '/soldRegisteredCarInfo/list',
+    '/soldRegisteredCarInfo/add'
+  ]
+  return targetRoutes.includes(route.path)
+})
+const shouldShowSafeIosArea = computed(() => {
+  return isIOS.value && needsSafeArea.value
+})
+
+// 获取安全区域信息
+onMounted(() => {
+  if (shouldShowSafeIosArea.value) {
+    // 方法1: 尝试通过CSS环境变量获取
+    try {
+      const tempDiv = document.createElement('div');
+      tempDiv.style.paddingTop = 'env(safe-area-inset-top, 0px)';
+      // 确保元素不可见且不影响布局
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.visibility = 'hidden';
+      document.body.appendChild(tempDiv);
+      
+      const computedStyle = window.getComputedStyle(tempDiv);
+      const envValue = computedStyle.paddingTop;
+      document.body.removeChild(tempDiv);
+      
+      if (envValue && envValue !== '0px') {
+        safeAreaTop.value = envValue;
+        console.log('安全区域顶部距离 (env):', envValue);
+        return;
+      }
+    } catch (e) {
+      console.log('env方法失败:', e);
+    }
+    
+    // 方法2: 通过window.visualViewport（现代浏览器）
+    if (window.visualViewport) {
+      const viewport = window.visualViewport;
+      // iOS 13+ 支持 visualViewport.offsetTop
+      if (viewport.offsetTop > 0) {
+        safeAreaTop.value = `${viewport.offsetTop}px`;
+        console.log('通过visualViewport获取安全区域:', safeAreaTop.value);
+        return;
+      }
+    }
+    
+    // 方法3: 通过屏幕和窗口尺寸计算（fallback）
+    const screenHeight = window.screen.height;
+    const windowHeight = window.innerHeight;
+    const addressBarHeight = screenHeight - windowHeight;
+    
+    // 如果地址栏高度很小，可能是全屏模式，检查是否有刘海
+    if (addressBarHeight < 50) {
+      const userAgent = navigator.userAgent;
+      if (userAgent.includes('iPhone')) {
+        // 根据设备型号估算
+        if (screenHeight >= 812) { // iPhone X及以上
+          safeAreaTop.value = '44px';
+        } else if (screenHeight >= 896) { // iPhone XR/XS Max及以上
+          safeAreaTop.value = '48px';
+        }
+      }
+    }
+    
+    console.log('最终安全区域顶部距离:', safeAreaTop.value);
+  }
+})
 
 // 处理返回按钮点击
 const handleBack = () => {
