@@ -1,6 +1,6 @@
 <template>
   <div class="base-container" :style="{ marginTop: shouldShowSafeIosArea ? safeAreaTop : '0px' }">
-    <header style="z-index: 5000;" v-if="!route.meta?.hideHeader">
+    <header style="z-index: 2000;" v-if="!route.meta?.hideHeader">
       <van-nav-bar 
         :title="globalStore.title" 
         left-arrow 
