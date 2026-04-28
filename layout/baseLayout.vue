@@ -1,9 +1,9 @@
 <template>
   <div class="base-container" :style="{ marginTop: shouldShowSafeIosArea ? safeAreaTop : '0px' }">
-    <header style="z-index: 2000;" v-if="!route.meta?.hideHeader">
-      <van-nav-bar 
-        :title="globalStore.title" 
-        left-arrow 
+    <header style="z-index: 5000;" v-if="!route.meta?.hideHeader">
+      <van-nav-bar
+        :title="globalStore.title"
+        left-arrow
         @click-left="handleBack"
       >
         <template #title>
@@ -74,56 +74,56 @@ onMounted(() => {
   if (shouldShowSafeIosArea.value) {
     // 方法1: 尝试通过CSS环境变量获取
     try {
-      const tempDiv = document.createElement('div');
-      tempDiv.style.paddingTop = 'env(safe-area-inset-top, 0px)';
+      const tempDiv = document.createElement('div')
+      tempDiv.style.paddingTop = 'env(safe-area-inset-top, 0px)'
       // 确保元素不可见且不影响布局
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.visibility = 'hidden';
-      document.body.appendChild(tempDiv);
-      
-      const computedStyle = window.getComputedStyle(tempDiv);
-      const envValue = computedStyle.paddingTop;
-      document.body.removeChild(tempDiv);
-      
+      tempDiv.style.position = 'absolute'
+      tempDiv.style.visibility = 'hidden'
+      document.body.appendChild(tempDiv)
+
+      const computedStyle = window.getComputedStyle(tempDiv)
+      const envValue = computedStyle.paddingTop
+      document.body.removeChild(tempDiv)
+
       if (envValue && envValue !== '0px') {
-        safeAreaTop.value = envValue;
-        console.log('安全区域顶部距离 (env):', envValue);
-        return;
+        safeAreaTop.value = envValue
+        console.log('安全区域顶部距离 (env):', envValue)
+        return
       }
     } catch (e) {
-      console.log('env方法失败:', e);
+      console.log('env方法失败:', e)
     }
-    
+
     // 方法2: 通过window.visualViewport（现代浏览器）
     if (window.visualViewport) {
-      const viewport = window.visualViewport;
+      const viewport = window.visualViewport
       // iOS 13+ 支持 visualViewport.offsetTop
       if (viewport.offsetTop > 0) {
-        safeAreaTop.value = `${viewport.offsetTop}px`;
-        console.log('通过visualViewport获取安全区域:', safeAreaTop.value);
-        return;
+        safeAreaTop.value = `${viewport.offsetTop}px`
+        console.log('通过visualViewport获取安全区域:', safeAreaTop.value)
+        return
       }
     }
-    
+
     // 方法3: 通过屏幕和窗口尺寸计算（fallback）
-    const screenHeight = window.screen.height;
-    const windowHeight = window.innerHeight;
-    const addressBarHeight = screenHeight - windowHeight;
-    
+    const screenHeight = window.screen.height
+    const windowHeight = window.innerHeight
+    const addressBarHeight = screenHeight - windowHeight
+
     // 如果地址栏高度很小，可能是全屏模式，检查是否有刘海
     if (addressBarHeight < 50) {
-      const userAgent = navigator.userAgent;
+      const userAgent = navigator.userAgent
       if (userAgent.includes('iPhone')) {
         // 根据设备型号估算
         if (screenHeight >= 812) { // iPhone X及以上
-          safeAreaTop.value = '44px';
+          safeAreaTop.value = '44px'
         } else if (screenHeight >= 896) { // iPhone XR/XS Max及以上
-          safeAreaTop.value = '48px';
+          safeAreaTop.value = '48px'
         }
       }
     }
-    
-    console.log('最终安全区域顶部距离:', safeAreaTop.value);
+
+    console.log('最终安全区域顶部距离:', safeAreaTop.value)
   }
 })
 
