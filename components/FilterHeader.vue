@@ -36,7 +36,14 @@
         <div v-if="filterCount > 0" class="filter-count-badge">{{ filterCount }}</div>
       </div>
     </div>
-    <van-popup position="top" v-model:show="popupShow" class="top-pop" :class="topupClass">
+    <van-popup
+      position="top"
+      v-model:show="popupShow"
+      class="top-pop"
+      :class="topupClass"
+      :style="{ top: popupTop }"
+      :z-index="6001"
+    >
       <div class="pop-inner-content">
         <div class="pop-scroll-view">
           <div class="pop-scroll-left">
@@ -319,6 +326,7 @@ const popupShow = ref(false)
 const activeIndex = ref(0)
 const searchForm = reactive({})
 const topupClass = ref(navigatorType === 'Android' ? 'topup-android' : 'topup-ios')
+const popupTop = ref('46px')
 const isHeaderScan = ref(props.isHeaderClick)
 const multipleList = ref([])
 const choiceDic = reactive({})
@@ -493,13 +501,6 @@ const clearSearch = () => {
   isInput.value = false
 }
 
-// 点击搜索按钮
-const handleSearchClick = () => {
-  searchEvent(searchValue.value)
-  // 搜索完成后，将焦点移开，这样可以显示筛选按钮
-  isInput.value = false
-}
-
 // 清空筛选条件
 const resetFilters = () => {
   // 清空搜索框
@@ -648,7 +649,17 @@ const calculateFilterCount = () => {
   filterCount.value = count
 }
 
+const updatePopupTop = () => {
+  const layoutContent = document.querySelector('.layout-content')
+  const baseHeader = document.querySelector('.base-container > header')
+  const measuredTop =
+    layoutContent?.getBoundingClientRect().top || baseHeader?.getBoundingClientRect().bottom
+
+  popupTop.value = measuredTop ? `${Math.max(0, Math.round(measuredTop))}px` : '46px'
+}
+
 const showPannel = () => {
+  updatePopupTop()
   popupShow.value = true
 }
 

@@ -1,6 +1,6 @@
 <template>
-  <div class="base-container" :style="{ marginTop: shouldShowSafeIosArea ? safeAreaTop : '0px' }">
-    <header style="z-index: 5000;" v-if="!route.meta?.hideHeader">
+  <div class="base-container" :style="baseContainerStyle">
+    <header style="z-index: 5000;" v-if="!route.meta?.hideHeader" :style="headerStyle">
       <van-nav-bar
         :title="globalStore.title"
         left-arrow
@@ -88,10 +88,27 @@ const needsSafeArea = computed(() => {
     '/repairWork/search'
   ]
   // 支持动态路由参数匹配
-  return targetRoutes.some(route => route.path === route || route.startsWith(route))
+  // 注意：这里不能用 route 作为迭代变量名，会覆盖外部的 Vue Router route 对象
+  return targetRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))
 })
 const shouldShowSafeIosArea = computed(() => {
   return isIOS.value && needsSafeArea.value
+})
+
+// 计算 base-container 的样式，同时设置 CSS 变量供子组件使用
+const baseContainerStyle = computed(() => {
+  const safeTop = shouldShowSafeIosArea.value ? safeAreaTop.value : '0px'
+  return {
+    '--safe-area-top': safeTop,
+    '--nav-bar-total-height': `calc(46px + ${safeTop})` // van-nav-bar 默认高度 46px
+  }
+})
+
+// header 的样式，用于添加顶部安全区域内边距
+const headerStyle = computed(() => {
+  return {
+    paddingTop: shouldShowSafeIosArea.value ? safeAreaTop.value : '0px'
+  }
 })
 
 // 获取安全区域信息
