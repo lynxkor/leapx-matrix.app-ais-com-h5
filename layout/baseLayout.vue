@@ -61,9 +61,34 @@ const needsSafeArea = computed(() => {
   const targetRoutes = [
     '/awaitingDeliveryAppointment/list',
     '/soldRegisteredCarInfo/list',
-    '/soldRegisteredCarInfo/add'
+    '/soldRegisteredCarInfo/add',
+    // 结算单模块
+    '/settlement-statement',
+    '/settlement-statement/search',
+    '/settlement-statement/after-sales',
+    // 预授权模块
+    '/pre-authorization/list',
+    '/pre-authorization/detail',
+    '/pre-authorization/create',
+    '/pre-authorization/search',
+    // 接车施工单模块
+    '/reception/work-order',
+    '/reception/work-order-search',
+    '/reception/vehicle-search',
+    '/reception/work-order/create',
+    '/reception/work-order/detail',
+    '/reception/work-order/edit',
+    '/reception/maintenance-history',
+    '/reception/rights-query',
+    '/reception/select-package',
+    '/reception/add-parts',
+    '/reception/sign',
+    // 维修作业模块
+    '/repairWork/list',
+    '/repairWork/search'
   ]
-  return targetRoutes.includes(route.path)
+  // 支持动态路由参数匹配
+  return targetRoutes.some(route => route.path === route || route.startsWith(route))
 })
 const shouldShowSafeIosArea = computed(() => {
   return isIOS.value && needsSafeArea.value
