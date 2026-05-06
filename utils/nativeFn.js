@@ -32,10 +32,23 @@ export function callPhone(phone) {
   }
 }
 // 选择图片支持相册和拍照
-export function getAppImgLimit(limitSize) {
+export function getAppImgLimit(limitSize, maxNum, hasUploadNumber) {
   if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
     window.Android.selectImageLimit(limitSize)
   } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
     window.webkit.messageHandlers.selectImageLimit.postMessage(limitSize)
+  }
+}
+// 批量上传图片
+export function batchUploadImageLimit(limitSize, maxNum, hasUploadNumber) {
+  const params = {
+    limitSize: String(limitSize),
+    limitNumber: String(maxNum),
+    hasUploadNumber: String(0)
+  }
+  if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
+    window.Android.batchUploadImage(JSON.stringify(params))
+  } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
+    window.webkit.messageHandlers.batchUploadImage.postMessage(JSON.stringify(params))
   }
 }
