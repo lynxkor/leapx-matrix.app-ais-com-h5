@@ -58,6 +58,9 @@ const isIOS = computed(() => {
   return /iphone|ipad|ipod/.test(userAgent)
 })
 const needsSafeArea = computed(() => {
+  const excludedRoutes = [
+    '/settlement-statement/after-sales'
+  ]
   const targetRoutes = [
     '/awaitingDeliveryAppointment/list',
     '/soldRegisteredCarInfo/list',
@@ -87,6 +90,9 @@ const needsSafeArea = computed(() => {
     '/repairWork/list',
     '/repairWork/search'
   ]
+  if (excludedRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))) {
+    return false
+  }
   // 支持动态路由参数匹配
   // 注意：这里不能用 route 作为迭代变量名，会覆盖外部的 Vue Router route 对象
   return targetRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))
@@ -98,9 +104,12 @@ const shouldShowSafeIosArea = computed(() => {
 // 计算 base-container 的样式，同时设置 CSS 变量供子组件使用
 const baseContainerStyle = computed(() => {
   const safeTop = shouldShowSafeIosArea.value ? safeAreaTop.value : '0px'
+  // 计算实际的总高度数值
+  const safeTopNum = parseInt(safeTop, 10) || 0
+  const totalHeight = 46 + safeTopNum
   return {
     '--safe-area-top': safeTop,
-    '--nav-bar-total-height': `calc(46px + ${safeTop})` // van-nav-bar 默认高度 46px
+    '--nav-bar-total-height': `${totalHeight}px` // 导航栏实际总高度
   }
 })
 
