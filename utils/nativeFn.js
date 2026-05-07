@@ -40,11 +40,11 @@ export function getAppImgLimit(limitSize, maxNum, hasUploadNumber) {
   }
 }
 // 批量上传图片
-export function batchUploadImageLimit(limitSize, maxNum, hasUploadNumber) {
+export function batchUploadImageLimit(limitSize, maxNum, hasUploadNumber = 1) {
   const params = {
     limitSize: String(limitSize),
     limitNumber: String(maxNum),
-    hasUploadNumber: String(0)
+    hasUploadNumber: String(hasUploadNumber)
   }
   if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
     window.Android.batchUploadImage(JSON.stringify(params))
