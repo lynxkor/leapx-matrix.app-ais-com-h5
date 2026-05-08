@@ -63,9 +63,6 @@ const needsSafeArea = computed(() => {
     return false
   }
 
-  const excludedRoutes = [
-    '/settlement-statement/after-sales'
-  ]
   const targetRoutes = [
     '/awaitingDeliveryAppointment/list',
     '/soldRegisteredCarInfo/list',
@@ -95,10 +92,6 @@ const needsSafeArea = computed(() => {
     '/repairWork/list',
     '/repairWork/search'
   ]
-
-  if (excludedRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))) {
-    return false
-  }
 
   return targetRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))
 })
