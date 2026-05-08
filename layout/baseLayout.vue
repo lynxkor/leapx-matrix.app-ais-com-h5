@@ -1,6 +1,6 @@
 <template>
   <div class="base-container" :style="baseContainerStyle">
-    <header v-if="!route.meta?.hideHeader" class="base-header" :style="headerStyle">
+    <header style="z-index: 2008;" v-if="!route.meta?.hideHeader" :style="headerStyle">
       <van-nav-bar
         :title="globalStore.title"
         left-arrow
@@ -39,7 +39,7 @@
 
 <script setup>
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useGlobalStore } from '@/stores/global'
 
 const globalStore = useGlobalStore()
@@ -124,10 +124,6 @@ const goDispatch = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-.base-header {
-  position: relative;
-  z-index: 100;
 }
 .layout-content {
   flex: 1;
