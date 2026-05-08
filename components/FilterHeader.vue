@@ -326,7 +326,7 @@ const popupShow = ref(false)
 const activeIndex = ref(0)
 const searchForm = reactive({})
 const topupClass = ref(navigatorType === 'Android' ? 'topup-android' : 'topup-ios')
-const popupTop = ref('46px')
+const popupTop = ref('var(--nav-bar-total-height, 46px)')
 const isHeaderScan = ref(props.isHeaderClick)
 const multipleList = ref([])
 const choiceDic = reactive({})
@@ -655,7 +655,9 @@ const updatePopupTop = () => {
   const measuredTop =
     layoutContent?.getBoundingClientRect().top || baseHeader?.getBoundingClientRect().bottom
 
-  popupTop.value = measuredTop ? `${Math.max(0, Math.round(measuredTop))}px` : '46px'
+  popupTop.value = measuredTop
+    ? `${Math.max(0, Math.round(measuredTop))}px`
+    : 'var(--nav-bar-total-height, 46px)'
 }
 
 const showPannel = () => {
@@ -1037,12 +1039,9 @@ const pickClick = () => {
   border-radius: 0px 0px 32px 32px;
 }
 
-.topup-android {
-  top: 46px;
-}
-
+.topup-android,
 .topup-ios {
-  top: 46px;
+  top: var(--nav-bar-total-height, 46px);
 }
 
 .pop-inner-content {

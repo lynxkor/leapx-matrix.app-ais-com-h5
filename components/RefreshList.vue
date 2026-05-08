@@ -281,7 +281,7 @@ watch(
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 66px;
+  margin-top: 24px;
   gap: 16px;
   padding: 15px 0;
   .no-data-img {

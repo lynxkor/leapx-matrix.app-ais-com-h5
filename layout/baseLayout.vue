@@ -1,6 +1,6 @@
 <template>
   <div class="base-container" :style="baseContainerStyle">
-    <header v-if="!route.meta?.hideHeader" class="base-header">
+    <header v-if="!route.meta?.hideHeader" class="base-header" :style="headerStyle">
       <van-nav-bar
         :title="globalStore.title"
         left-arrow
@@ -39,7 +39,7 @@
 
 <script setup>
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useGlobalStore } from '@/stores/global'
 
 const globalStore = useGlobalStore()
@@ -50,12 +50,109 @@ const route = useRoute()
 // 当前路由组件实例
 const currentRouteComponent = ref(null)
 
+// 安全区域顶部距离
+const safeAreaTop = ref('0px')
+
+const isIOS = computed(() => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return /iphone|ipad|ipod/.test(userAgent)
+})
+
+const needsSafeArea = computed(() => {
+  if (route.meta?.hideHeader) {
+    return false
+  }
+
+  const excludedRoutes = [
+    '/settlement-statement/after-sales'
+  ]
+  const targetRoutes = [
+    '/awaitingDeliveryAppointment/list',
+    '/soldRegisteredCarInfo/list',
+    '/soldRegisteredCarInfo/add',
+    // 结算单模块
+    '/settlement-statement',
+    // 预授权模块
+    '/pre-authorization/list',
+    '/pre-authorization/detail',
+    '/pre-authorization/create',
+    // 接车施工单模块
+    '/reception/work-order',
+    '/reception/work-order/create',
+    '/reception/work-order/detail',
+    '/reception/work-order/edit',
+    '/reception/maintenance-history',
+    '/reception/rights-query',
+    '/reception/select-package',
+    '/reception/add-parts',
+    '/reception/sign',
+    // 维修作业模块
+    '/repairWork/list'
+  ]
+
+  if (excludedRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))) {
+    return false
+  }
+
+  return targetRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))
+})
+
+const shouldShowSafeIosArea = computed(() => {
+  return isIOS.value && needsSafeArea.value
+})
+
 // 计算 base-container 的样式，同时设置 CSS 变量供子组件使用
 const baseContainerStyle = computed(() => {
+  const safeTop = shouldShowSafeIosArea.value ? safeAreaTop.value : '0px'
   return {
-    '--safe-area-top': '0px',
-    '--nav-bar-total-height': '46px'
+    '--safe-area-top': safeTop,
+    '--nav-bar-total-height': `calc(46px + ${safeTop})`
   }
+})
+
+// header 的样式，用于添加顶部安全区域内边距
+const headerStyle = computed(() => {
+  return {
+    paddingTop: shouldShowSafeIosArea.value ? safeAreaTop.value : '0px'
+  }
+})
+
+// 获取安全区域信息。只使用系统真实暴露的值，避免在已内嵌安全区的 WebView 中重复估算 44px。
+const updateSafeAreaTop = () => {
+  if (!isIOS.value) {
+    safeAreaTop.value = '0px'
+    return
+  }
+
+  try {
+    const tempDiv = document.createElement('div')
+    tempDiv.style.paddingTop = 'env(safe-area-inset-top, 0px)'
+    tempDiv.style.position = 'absolute'
+    tempDiv.style.visibility = 'hidden'
+    document.body.appendChild(tempDiv)
+
+    const computedStyle = window.getComputedStyle(tempDiv)
+    const envValue = computedStyle.paddingTop
+    document.body.removeChild(tempDiv)
+
+    if (envValue && envValue !== '0px') {
+      safeAreaTop.value = envValue
+      return
+    }
+  } catch (e) {
+    console.log('env方法失败:', e)
+  }
+
+  if (window.visualViewport && window.visualViewport.offsetTop > 0) {
+    safeAreaTop.value = `${window.visualViewport.offsetTop}px`
+    return
+  }
+
+  safeAreaTop.value = '0px'
+}
+
+onMounted(() => {
+  updateSafeAreaTop()
 })
 
 // 处理返回按钮点击
