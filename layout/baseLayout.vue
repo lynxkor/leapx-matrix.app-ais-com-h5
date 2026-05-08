@@ -72,12 +72,17 @@ const needsSafeArea = computed(() => {
     '/soldRegisteredCarInfo/add',
     // 结算单模块
     '/settlement-statement',
+    '/settlement-statement/search',
+    '/settlement-statement/after-sales',
     // 预授权模块
     '/pre-authorization/list',
     '/pre-authorization/detail',
     '/pre-authorization/create',
+    '/pre-authorization/search',
     // 接车施工单模块
     '/reception/work-order',
+    '/reception/work-order-search',
+    '/reception/vehicle-search',
     '/reception/work-order/create',
     '/reception/work-order/detail',
     '/reception/work-order/edit',
@@ -87,7 +92,8 @@ const needsSafeArea = computed(() => {
     '/reception/add-parts',
     '/reception/sign',
     // 维修作业模块
-    '/repairWork/list'
+    '/repairWork/list',
+    '/repairWork/search'
   ]
 
   if (excludedRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))) {
