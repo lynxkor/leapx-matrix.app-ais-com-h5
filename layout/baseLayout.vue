@@ -1,6 +1,6 @@
 <template>
   <div class="base-container" :style="baseContainerStyle">
-    <header style="z-index: 2008;" v-if="!route.meta?.hideHeader" :style="headerStyle">
+    <header v-if="!route.meta?.hideHeader" class="base-header">
       <van-nav-bar
         :title="globalStore.title"
         left-arrow
@@ -39,7 +39,7 @@
 
 <script setup>
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useGlobalStore } from '@/stores/global'
 
 const globalStore = useGlobalStore()
@@ -50,131 +50,11 @@ const route = useRoute()
 // 当前路由组件实例
 const currentRouteComponent = ref(null)
 
-// 安全区域顶部距离
-const safeAreaTop = ref('0px')
-
-const isIOS = computed(() => {
-  const userAgent = navigator.userAgent.toLowerCase()
-  return /iphone|ipad|ipod/.test(userAgent)
-})
-const needsSafeArea = computed(() => {
-  const excludedRoutes = [
-    '/settlement-statement/after-sales'
-  ]
-  const targetRoutes = [
-    '/awaitingDeliveryAppointment/list',
-    '/soldRegisteredCarInfo/list',
-    '/soldRegisteredCarInfo/add',
-    // 结算单模块
-    '/settlement-statement',
-    '/settlement-statement/search',
-    '/settlement-statement/after-sales',
-    // 预授权模块
-    '/pre-authorization/list',
-    '/pre-authorization/detail',
-    '/pre-authorization/create',
-    '/pre-authorization/search',
-    // 接车施工单模块
-    '/reception/work-order',
-    '/reception/work-order-search',
-    '/reception/vehicle-search',
-    '/reception/work-order/create',
-    '/reception/work-order/detail',
-    '/reception/work-order/edit',
-    '/reception/maintenance-history',
-    '/reception/rights-query',
-    '/reception/select-package',
-    '/reception/add-parts',
-    '/reception/sign',
-    // 维修作业模块
-    '/repairWork/list',
-    '/repairWork/search'
-  ]
-  if (excludedRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))) {
-    return false
-  }
-  // 支持动态路由参数匹配
-  // 注意：这里不能用 route 作为迭代变量名，会覆盖外部的 Vue Router route 对象
-  return targetRoutes.some(targetRoute => route.path === targetRoute || route.path.startsWith(targetRoute))
-})
-const shouldShowSafeIosArea = computed(() => {
-  return isIOS.value && needsSafeArea.value
-})
-
 // 计算 base-container 的样式，同时设置 CSS 变量供子组件使用
 const baseContainerStyle = computed(() => {
-  const safeTop = shouldShowSafeIosArea.value ? safeAreaTop.value : '0px'
-  // 计算实际的总高度数值
-  const safeTopNum = parseInt(safeTop, 10) || 0
-  const totalHeight = 46 + safeTopNum
   return {
-    '--safe-area-top': safeTop,
-    '--nav-bar-total-height': `${totalHeight}px` // 导航栏实际总高度
-  }
-})
-
-// header 的样式，用于添加顶部安全区域内边距
-const headerStyle = computed(() => {
-  return {
-    paddingTop: shouldShowSafeIosArea.value ? safeAreaTop.value : '0px'
-  }
-})
-
-// 获取安全区域信息
-onMounted(() => {
-  if (shouldShowSafeIosArea.value) {
-    // 方法1: 尝试通过CSS环境变量获取
-    try {
-      const tempDiv = document.createElement('div')
-      tempDiv.style.paddingTop = 'env(safe-area-inset-top, 0px)'
-      // 确保元素不可见且不影响布局
-      tempDiv.style.position = 'absolute'
-      tempDiv.style.visibility = 'hidden'
-      document.body.appendChild(tempDiv)
-
-      const computedStyle = window.getComputedStyle(tempDiv)
-      const envValue = computedStyle.paddingTop
-      document.body.removeChild(tempDiv)
-
-      if (envValue && envValue !== '0px') {
-        safeAreaTop.value = envValue
-        console.log('安全区域顶部距离 (env):', envValue)
-        return
-      }
-    } catch (e) {
-      console.log('env方法失败:', e)
-    }
-
-    // 方法2: 通过window.visualViewport（现代浏览器）
-    if (window.visualViewport) {
-      const viewport = window.visualViewport
-      // iOS 13+ 支持 visualViewport.offsetTop
-      if (viewport.offsetTop > 0) {
-        safeAreaTop.value = `${viewport.offsetTop}px`
-        console.log('通过visualViewport获取安全区域:', safeAreaTop.value)
-        return
-      }
-    }
-
-    // 方法3: 通过屏幕和窗口尺寸计算（fallback）
-    const screenHeight = window.screen.height
-    const windowHeight = window.innerHeight
-    const addressBarHeight = screenHeight - windowHeight
-
-    // 如果地址栏高度很小，可能是全屏模式，检查是否有刘海
-    if (addressBarHeight < 50) {
-      const userAgent = navigator.userAgent
-      if (userAgent.includes('iPhone')) {
-        // 根据设备型号估算
-        if (screenHeight >= 812) { // iPhone X及以上
-          safeAreaTop.value = '44px'
-        } else if (screenHeight >= 896) { // iPhone XR/XS Max及以上
-          safeAreaTop.value = '48px'
-        }
-      }
-    }
-
-    console.log('最终安全区域顶部距离:', safeAreaTop.value)
+    '--safe-area-top': '0px',
+    '--nav-bar-total-height': '46px'
   }
 })
 
@@ -252,6 +132,10 @@ const goDispatch = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+.base-header {
+  position: relative;
+  z-index: 100;
 }
 .layout-content {
   flex: 1;
