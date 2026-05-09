@@ -2,7 +2,6 @@
  * 等待 lxpToken 就绪的工具函数
  * 解决 iOS 首次加载时客户端注入 token 晚于 Vue 应用初始化的问题
  */
-
 /**
  * 注入 loading 和 error UI 到 #app 容器
  */
