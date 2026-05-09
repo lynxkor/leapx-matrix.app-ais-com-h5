@@ -3,7 +3,7 @@ import axios from 'axios'
 import { showConfirmDialog } from 'vant'
 import { useUserStore } from '@/stores/user'
 import { outWebview } from '@/libs/utils/app'
-import { applyAuthHeaders } from '@/utils/authToken'
+import { applyAuthHeaders, waitForTokenChange } from '@/utils/authToken'
 
 // 创建axios实例
 const service = axios.create({
@@ -14,6 +14,8 @@ const service = axios.create({
   //     'Content-Type': 'application/json'
   // }
 })
+
+let authDialogVisible = false
 
 // 请求拦截器
 service.interceptors.request.use(
@@ -32,16 +34,33 @@ service.interceptors.response.use(
   (response) => {
     return response.data
   },
-  (error) => {
+  async(error) => {
     const status = error.response?.status
 
     if (status === 401 || status === 403) {
+      const config = error.config
+
+      if (config && !config.authRetry) {
+        const latestToken = await waitForTokenChange(config.authToken)
+
+        if (latestToken) {
+          config.authRetry = true
+          return service(applyAuthHeaders(config, latestToken))
+        }
+      }
+
+      if (authDialogVisible) {
+        return Promise.reject(error)
+      }
+      authDialogVisible = true
       showConfirmDialog({
         title: '提示',
         message: status === 401 ? '登录已过期，请点击确定返回' : '无权限访问，请点击确定返回'
       }).then(() => {
         // 确认按钮回调
         outWebview()
+      }).finally(() => {
+        authDialogVisible = false
       })
     }
 
