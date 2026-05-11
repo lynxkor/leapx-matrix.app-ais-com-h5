@@ -142,3 +142,7 @@ export function getLoginInfo(params) {
 export function getMaintainEnum(code) {
   return postJson(`maintain/web/common/enum/${code}`)
 }
+// 通用枚举值获取
+export function getEnumValue(prefix) {
+  return post(`maintain/app/common/enum/${prefix}`)
+}
