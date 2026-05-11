@@ -1,6 +1,6 @@
 <template>
-  <div class="base-container">
-    <header style="z-index: 2008;" v-if="!route.meta?.hideHeader">
+  <div class="base-container" :style="baseContainerStyle">
+    <header style="z-index: 2008;" v-if="!route.meta?.hideHeader" :style="headerStyle">
       <van-nav-bar
         :title="globalStore.title"
         left-arrow
