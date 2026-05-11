@@ -17,6 +17,7 @@ let authDialogVisible = false
 service.interceptors.request.use(
   (config) => {
     const userStore = useUserStore()
+    config.authToken = userStore.token
     return applyAuthHeaders(config, userStore.token)
   },
   (error) => {
