@@ -41,8 +41,20 @@
 import { RouterView, useRouter, useRoute } from 'vue-router'
 import { ref, computed, watch } from 'vue'
 import { useGlobalStore } from '@/stores/global'
+import { usePageSafeArea } from '@/utils/safeArea'
 
 const globalStore = useGlobalStore()
+
+const { safeAreaTop, navBarOffsetTop } = usePageSafeArea()
+
+const baseContainerStyle = computed(() => ({
+  '--safe-area-top': safeAreaTop.value,
+  '--nav-bar-total-height': `${navBarOffsetTop.value}px`
+}))
+
+const headerStyle = computed(() => ({
+  paddingTop: safeAreaTop.value
+}))
 
 const router = useRouter()
 const route = useRoute()
