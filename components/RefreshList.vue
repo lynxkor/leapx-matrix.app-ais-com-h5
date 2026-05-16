@@ -206,7 +206,7 @@ const finishedTextWithResetButton = computed(() => {
   if (props.hasNoData) {
     return ''
   } else {
-    return '没有更多了'
+    return ''
   }
 })
 
