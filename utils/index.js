@@ -1,5 +1,33 @@
 import { NAVIGATOR_TYPE_ANDROID, NAVIGATOR_TYPE_IOS } from './constants'
-
+import { showToast } from 'vant'
+/**
+ * 复制
+ * @export
+ * @param {*} text
+ * @returns
+ */
+export function copyText(text) {
+  // 使用 Clipboard API 复制
+  if (navigator.clipboard) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        showToast('复制成功')
+      })
+      .catch(() => {
+        showToast('复制失败')
+      })
+  } else {
+    // 降级方案：兼容旧浏览器
+    const input = document.createElement('input')
+    input.value = text
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+    showToast('复制成功')
+  }
+}
 /**
  * 判断手机类型.
  * @returns {string} 安卓类型返回Android 苹果类型返回Ios，其他返回other.
