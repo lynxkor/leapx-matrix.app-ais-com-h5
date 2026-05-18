@@ -12,6 +12,6 @@ export function getSalesConsultantEnum(orgCodeList, salesConfigKey) {
 }
 // 获取门店
 export function getStoreEnum(organization) {
-  return post('/leapx/users/scope/type/org', organization)
+  return post('/leapx/users/scope/type/org', organization, 'leapx')
 }
 

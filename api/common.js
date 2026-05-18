@@ -109,7 +109,7 @@ export function getVehicleModelYearTypeRelationDistinctYeayType(data) {
  * @param {Object} data
  */
 export function getOwnerTree(data) {
-  return get('/leapx/resource/tree', data)
+  return get('/leapx/resource/tree', data, 'leapx')
 }
 
 /**
