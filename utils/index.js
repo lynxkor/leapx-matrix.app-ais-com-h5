@@ -6,8 +6,17 @@ import { showToast } from 'vant'
  * @param {*} text
  * @returns
  */
+function fallbackCopyText(text) {
+  const input = document.createElement('input')
+  input.value = text
+  document.body.appendChild(input)
+  input.select()
+  document.execCommand('copy')
+  document.body.removeChild(input)
+  showToast('复制成功')
+}
+
 export function copyText(text) {
-  // 使用 Clipboard API 复制
   if (navigator.clipboard) {
     navigator.clipboard
       .writeText(text)
@@ -15,17 +24,11 @@ export function copyText(text) {
         showToast('复制成功')
       })
       .catch(() => {
-        showToast('复制失败')
+        // Android webview 中 Clipboard API 可能存在但调用失败，降级到 execCommand
+        fallbackCopyText(text)
       })
   } else {
-    // 降级方案：兼容旧浏览器
-    const input = document.createElement('input')
-    input.value = text
-    document.body.appendChild(input)
-    input.select()
-    document.execCommand('copy')
-    document.body.removeChild(input)
-    showToast('复制成功')
+    fallbackCopyText(text)
   }
 }
 /**
