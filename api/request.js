@@ -3,7 +3,7 @@ import axios from 'axios'
 import { showConfirmDialog, showToast } from 'vant'
 import { useUserStore } from '@/stores/user'
 import { outWebview } from '@/libs/utils/app'
-import { applyAuthHeaders } from '@/utils/authToken'
+import { applyAuthHeaders } from '../utils/authToken'
 
 const root = window.APP_AIS_H5_CONFIG.VITE_API_BASE_URL
 const leapx = window.APP_AIS_H5_CONFIG.VITE_LEAPX_URL
