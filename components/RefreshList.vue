@@ -16,6 +16,7 @@
         <img class="no-data-img" src="../assets/image/no-data.png" alt="没有数据" />
         <p class="no-data-text">没有找到相关内容</p>
         <van-button
+          v-if="showResetButton"
           plain
           type="primary"
           size="normal"
@@ -41,6 +42,10 @@ const props = defineProps({
   hasNoData: {
     type: Boolean,
     default: false
+  },
+  showResetButton: {
+    type: Boolean,
+    default: true
   }
 })
 
