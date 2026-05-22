@@ -270,8 +270,8 @@ import { getNavigatorType, formatDate } from '../utils/index'
 import { toScan } from '../utils/nativeFn'
 import sortDownIcon from '../assets/image/sort_down_icon.svg'
 import sortUpIcon from '../assets/image/sort_up_icon.svg'
-import moreIcon from '../assets/image/more_condition_icon.png'
-import moreIconHl from '../assets/image/more_condition_icon_highlight.png'
+import moreIcon from '../assets/image/more_condition_icon.svg'
+import moreIconHl from '../assets/image/loudou.svg'
 import SearchDropdown from './SearchDropdown.vue'
 
 const navigatorType = getNavigatorType()
