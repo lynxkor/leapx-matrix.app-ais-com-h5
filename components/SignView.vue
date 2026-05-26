@@ -292,19 +292,20 @@ const submit = async() => {
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    gap: 60px;
     font-weight: 400;
     .overwrite_sign {
       transform: rotate(90deg);
       height: 32px !important;
       width: 80px !important;
       white-space: nowrap;
+      margin-bottom: 60px;
     }
     .confirm_sign {
       transform: rotate(90deg);
       height: 32px !important;
       width: 90px !important;
       white-space: nowrap;
+      margin-bottom: 0;
     }
   }
   .dialog-line-text {
