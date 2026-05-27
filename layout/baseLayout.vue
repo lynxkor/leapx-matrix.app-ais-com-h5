@@ -53,7 +53,7 @@ const baseContainerStyle = computed(() => ({
 }))
 
 const headerStyle = computed(() => ({
-  paddingTop: safeAreaTop.value
+  // paddingTop: safeAreaTop.value
 }))
 
 const router = useRouter()
