@@ -8,7 +8,7 @@ import { applyAuthHeaders, waitForTokenChange } from '@/utils/authToken'
 // 创建axios实例
 const service = axios.create({
   baseURL: window.APP_AIS_H5_CONFIG?.VITE_API_FILE_URL || import.meta.env.VITE_API_FILE_URL, // 从环境变量读取基础URL
-  timeout: 10000 // 超时时间
+  timeout: 30 * 1000 // 超时时间
 
   // headers: {
   //     'Content-Type': 'application/json'

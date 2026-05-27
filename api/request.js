@@ -30,7 +30,7 @@ function resolveBaseURL(url, sign) {
 
 // 创建axios实例
 const service = axios.create({
-  timeout: 10000 // 超时时间
+  timeout: 30 * 1000 // 超时时间
 })
 
 // 请求拦截器
