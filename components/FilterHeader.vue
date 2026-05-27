@@ -1,5 +1,5 @@
 <template>
-  <div style="box-shadow: 0px 1px 0px 0px rgba(210, 216, 223, 0.6)">
+  <div class="filter-header" style="box-shadow: 0px 1px 0px 0px rgba(210, 216, 223, 0.6)">
     <div class="search-content">
       <form action="/" class="search-input" :class="{ 'with-scan': showScan }">
         <van-search
@@ -1255,5 +1255,10 @@ const pickClick = () => {
 .search-input input.van-field__control {
   color: #000;
   font-size: 12px;
+}
+.filter-header {
+  .van-overlay {
+    top: var(--nav-bar-total-height, 46px);
+  }
 }
 </style>
