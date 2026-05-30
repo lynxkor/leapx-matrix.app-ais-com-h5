@@ -209,7 +209,8 @@
         </div>
       </div>
     </van-popup>
-    <van-popup v-model:show="pickVisible" class="pick-outter" :close-on-click-overlay="false">
+    <van-popup v-model:show="pickVisible" class="pick-outter" :close-on-click-overlay="false"
+    :z-index="6001">
       <div class="pick-content">
         <p class="pick-title">自选时间</p>
         <div class="pick-time-line">
