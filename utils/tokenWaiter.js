@@ -116,3 +116,14 @@ export async function mountWithToken(app, options = {}) {
     showTokenError()
   }
 }
+
+/**
+ * 跳过 token 等待，立即挂载 Vue 应用（用于外网访问的无 token 场景）
+ * 仍会复用注入的 loading UI，让挂载时机可控。
+ * @param {Object} app Vue 应用实例
+ */
+export function mountImmediately(app) {
+  // 注入 loading UI，便于挂载前保持占位
+  injectLoadingUI()
+  app.mount('#app')
+}
