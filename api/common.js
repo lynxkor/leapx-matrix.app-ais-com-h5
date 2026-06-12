@@ -125,7 +125,7 @@ export function storePage(data) {
   * @param {*} data
   */
 export function getEnum(code, size) {
-  return postJson('/datacenter/web/common/commonDictValue/get', { dictType: code, pageSize: size || 200 })
+  return postJson('/datacenter/app/common/commonDictValue/getByType', { dictType: code, pageSize: size || 200 })
 }
 
 /**
@@ -140,7 +140,7 @@ export function getLoginInfo(params) {
  * @param {Object} data
  */
 export function getMaintainEnum(code) {
-  return postJson(`maintain/web/common/enum/${code}`)
+  return postJson(`maintain/app/common/enum/${code}`)
 }
 // 通用枚举值获取
 export function getEnumValue(prefix) {
