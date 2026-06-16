@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-header" style="box-shadow: 0px 1px 0px 0px rgba(210, 216, 223, 0.6)">
+  <div class="filter-header" style="box-shadow: 0 1px 0 0 rgba(210, 216, 223, 0.6)">
     <div class="search-content">
       <form action="/" class="search-input" :class="{ 'with-scan': showScan }">
         <van-search
@@ -925,7 +925,8 @@ const pickClick = () => {
   align-items: center;
   padding: 0 12px;
   position: relative;
-  background-color: #ffffff;
+  background-color: #fff;
+
   .search-input {
     flex: 1;
     border-radius: 15px;
@@ -933,22 +934,20 @@ const pickClick = () => {
     height: 30px;
     margin-right: 10px;
     position: relative;
+
     .van-search {
       height: 30px;
       padding: 0;
     }
   }
+
   .scan-icon {
     width: 30px;
     height: 30px;
     position: absolute;
-    top: 0px;
+    top: 0;
     right: 8px;
     z-index: 2;
-  }
-
-  .search-input {
-    position: relative;
   }
 
   /* 当显示扫描图标时，调整搜索框的清除按钮位置 */
@@ -956,13 +955,12 @@ const pickClick = () => {
     :deep(.van-search__content) {
       padding-right: 30px;
     }
-  }
 
-  .search-input.with-scan {
     :deep(.van-search__clear) {
       right: 30px;
     }
   }
+
   .toggle-content {
     display: flex;
     height: 30px;
@@ -971,58 +969,65 @@ const pickClick = () => {
     border-radius: 30px;
     border: 1px solid #979797;
     margin-right: 10px;
+
     .toggle-icon {
       width: 30px;
       height: 30px;
     }
+
     .toggle-span {
       font-size: 12px;
       font-family:
         PingFangSC-Regular,
-        PingFang SC;
+        "PingFang SC", sans-serif;
       font-weight: 400;
-      color: #000000;
+      color: #000;
       letter-spacing: 1px;
       word-break: keep-all;
     }
   }
+
   .search-btn {
     height: 26px;
     width: 52px;
     padding: 0 12px;
     background-color: #009100;
-    color: #ffffff;
+    color: #fff;
     border-radius: 15px;
     font-size: 12px;
     font-family:
       PingFangSC-Regular,
-      PingFang SC;
+      "PingFang SC", sans-serif;
     font-weight: 400;
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   .more-condition-container {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   .more-condition-btn {
     width: 30px;
     height: 30px;
     border: 1px solid #979797;
-    border-radius: 100% 100%;
+    border-radius: 100%;
   }
+
   .more-condition-btn-hl {
-    border: 1px solid #00aa00;
+    border: 1px solid #0a0;
   }
+
   .filter-count-badge {
     position: absolute;
     top: -5px;
     right: -5px;
     background-color: #009100;
-    color: #ffffff;
+    color: #fff;
     font-size: 10px;
     font-weight: bold;
     min-width: 16px;
@@ -1037,7 +1042,7 @@ const pickClick = () => {
 }
 
 .top-pop {
-  border-radius: 0px 0px 32px 32px;
+  border-radius: 0 0 32px 32px;
 }
 
 .topup-android,
@@ -1049,15 +1054,18 @@ const pickClick = () => {
   position: relative;
   display: flex;
   flex-direction: column;
+
   .pop-scroll-view {
     width: 100%;
     height: 65vh;
     overflow-y: hidden;
     display: flex;
+
     .pop-scroll-left {
       width: 102px;
       overflow-y: auto;
       background: #f7f8fa;
+
       .title-text {
         width: 100%;
         text-align: left;
@@ -1065,22 +1073,24 @@ const pickClick = () => {
         font-size: 14px;
         font-family:
           PingFangSC-Regular,
-          PingFang SC;
+          "PingFang SC", sans-serif;
         font-weight: 400;
         color: #191a1b;
         padding-left: 22px;
         line-height: 21px;
       }
+
       .active-title-text {
-        color: #00aa00;
-        background: #ffffff;
+        color: #0a0;
+        background: #fff;
         position: relative;
+
         &::after {
           display: inline-block;
           width: 1.5px;
           height: 17px;
           content: '';
-          background: #00aa00;
+          background: #0a0;
           position: absolute;
           top: 50%;
           left: 0;
@@ -1088,35 +1098,41 @@ const pickClick = () => {
         }
       }
     }
+
     .pop-scroll-right {
       flex: 1;
-      background: #ffffff;
+      background: #fff;
       overflow-y: auto;
+
       .option-view {
         padding-bottom: 16px;
         margin: 18px 13px 0;
         border-bottom: 1px solid #f2f3f2;
+
         &:nth-last-of-type(1) {
           border-bottom: 0;
         }
+
         .option-title {
           font-size: 14px;
           font-family:
             PingFangSC-Medium,
-            PingFang SC;
+            "PingFang SC", sans-serif;
           font-weight: 500;
           color: #191a1b;
           margin-bottom: 12px;
         }
+
         .option-list {
           display: flex;
           flex-wrap: wrap;
           // justify-content: space-between;
           justify-content: flex-start;
           gap: 8px;
+
           .option-text {
             min-width: 77px;
-            background: #ffffff;
+            background: #fff;
             border-radius: 7px;
             border: 1px solid #dce0e4;
             line-height: 15px;
@@ -1124,7 +1140,7 @@ const pickClick = () => {
             font-size: 10px;
             font-family:
               PingFangSC-Regular,
-              PingFang SC;
+              "PingFang SC", sans-serif;
             font-weight: 400;
             color: #191a1b;
             word-break: keep-all;
@@ -1132,46 +1148,52 @@ const pickClick = () => {
             // margin-right: 8px;
             // margin-bottom: 8px;
           }
+
           .user-icon {
             // flex: 0 0 100%;
           }
+
           .active-option-text {
-            border: 1px solid #00aa00;
-            color: #00aa00;
+            border: 1px solid #0a0;
+            color: #0a0;
           }
         }
       }
+
       .empty-text {
         color: #333;
         font-size: 12px;
       }
     }
   }
+
   .pop-inner-footer {
     width: 100%;
     height: 76px;
-    background: #ffffff;
+    background: #fff;
     display: flex;
     padding: 0 16px;
     align-items: center;
     justify-content: space-between;
+
     .clear-btn {
       font-size: 16px;
       font-family:
         PingFangSC-Medium,
-        PingFang SC;
+        "PingFang SC", sans-serif;
       font-weight: 500;
       color: #525452;
     }
+
     .search-btn {
       padding: 10px 32px;
       font-size: 16px;
       font-family:
         PingFangSC-Medium,
-        PingFang SC;
+        "PingFang SC", sans-serif;
       font-weight: 500;
-      color: #ffffff;
-      background: #00aa00;
+      color: #fff;
+      background: #0a0;
       border-radius: 22px;
     }
   }
@@ -1183,24 +1205,27 @@ const pickClick = () => {
 
 .pick-content {
   padding: 32px 24px 16px;
-  background: #ffffff;
-  box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.24);
+  background: #fff;
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.24);
   border-radius: 16px;
+
   .pick-title {
     font-size: 16px;
     font-family:
       PingFangSC,
-      PingFang SC;
+      "PingFang SC", sans-serif;
     font-weight: 500;
-    color: #000000;
+    color: #000;
     letter-spacing: 1px;
     margin-bottom: 12px;
     text-align: center;
   }
+
   .pick-time-line {
     display: flex;
     align-items: center;
     margin-bottom: 6px;
+
     .pick-time-line-item {
       width: 135px;
       height: 28px;
@@ -1211,39 +1236,42 @@ const pickClick = () => {
       color: #515351;
       font-size: 14px;
     }
+
     .pick-time-line-item-hl {
-      color: #00aa00;
+      color: #0a0;
     }
+
     .pick-time-seperator {
       color: #515351;
       font-size: 16px;
       margin: 0 6px;
     }
   }
+
   .picker-inner {
     width: 288px;
     height: 150px;
     background: #f6f6f6;
     border-radius: 7px;
     margin-bottom: 16px;
+
     .van-picker {
-      width: 100%;
-      height: 100%;
       width: 288px;
       height: 150px;
     }
   }
+
   .pick-btn {
     width: 288px;
     height: 44px;
-    background: #00aa00;
+    background: #0a0;
     border-radius: 11px;
     font-size: 14px;
     font-family:
       PingFangSC,
-      PingFang SC;
+      "PingFang SC", sans-serif;
     font-weight: 500;
-    color: #ffffff;
+    color: #fff;
     line-height: 44px;
     text-align: center;
   }
@@ -1257,6 +1285,7 @@ const pickClick = () => {
   color: #000;
   font-size: 12px;
 }
+
 .filter-header {
   .van-overlay {
     top: var(--nav-bar-total-height, 46px);
