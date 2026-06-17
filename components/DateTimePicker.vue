@@ -8,12 +8,14 @@
       @cancel="onCancel"
     >
       <van-date-picker
+        :key="`date-${pickerKey}`"
         v-model="currentDate"
         :columns-type="['year', 'month', 'day']"
         :min-date="minDate"
         :max-date="maxDate"
       />
       <van-time-picker
+        :key="`time-${pickerKey}`"
         v-model="currentTime"
         :columns-type="['hour', 'minute', 'second']"
         :min-time="effectiveMinTime"
@@ -60,27 +62,32 @@ const innerShow = computed({
 const activeTab = ref(0)
 const currentDate = ref(['2026', '01', '01'])
 const currentTime = ref(['08', '00', '00'])
+const now = ref(new Date())
+const pickerKey = ref(0)
 
 const isToday = computed(() => {
   const [y, m, d] = currentDate.value.map(Number)
-  const now = new Date()
-  return y === now.getFullYear() && m === now.getMonth() + 1 && d === now.getDate()
+  return (
+    y === now.value.getFullYear() &&
+    m === now.value.getMonth() + 1 &&
+    d === now.value.getDate()
+  )
 })
 
 const effectiveMinHour = computed(() => {
   if (isToday.value) {
-    const nowHour = new Date().getHours()
-    return Math.min(Math.max(nowHour + 1, props.minHour), props.maxHour)
+    const nowHour = now.value.getHours()
+    return Math.min(Math.max(nowHour, props.minHour), props.maxHour)
   }
   return props.minHour
 })
 
 const effectiveMinMinute = computed(() => {
   if (isToday.value) {
-    const nowHour = new Date().getHours()
-    if (effectiveMinHour.value === nowHour + 1) {
-      const nowMin = new Date().getMinutes() + 1
-      return Math.max(nowMin, props.minMinute)
+    const nowHour = now.value.getHours()
+    if (effectiveMinHour.value === nowHour) {
+      const nowMin = now.value.getMinutes() + 1
+      return Math.min(Math.max(nowMin, props.minMinute), 59)
     }
   }
   return props.minMinute
@@ -100,6 +107,8 @@ const effectiveMaxTime = computed(() => {
 
 watch(() => props.show, (val) => {
   if (val) {
+    now.value = new Date()
+    pickerKey.value++
     activeTab.value = 0
     if (props.modelValue) {
       const [datePart, timePart] = props.modelValue.split(' ')
@@ -110,13 +119,11 @@ watch(() => props.show, (val) => {
         currentTime.value = timePart.split(':')
       }
     } else {
-      const now = new Date()
       currentDate.value = [
-        String(now.getFullYear()),
-        String(now.getMonth() + 1).padStart(2, '0'),
-        String(now.getDate()).padStart(2, '0')
+        String(now.value.getFullYear()),
+        String(now.value.getMonth() + 1).padStart(2, '0'),
+        String(now.value.getDate()).padStart(2, '0')
       ]
-      // 若当前时间已超过 maxHour，默认设为 minHour（用户需选未来日期才能选到）
       currentTime.value = [
         String(effectiveMinHour.value).padStart(2, '0'),
         String(effectiveMinMinute.value).padStart(2, '0'),
@@ -131,7 +138,7 @@ watch(currentDate, () => {
   if (hour < effectiveMinHour.value || hour > props.maxHour) {
     currentTime.value = [
       String(effectiveMinHour.value).padStart(2, '0'),
-      String(props.minMinute).padStart(2, '0'),
+      String(effectiveMinMinute.value).padStart(2, '0'),
       '00'
     ]
   }
