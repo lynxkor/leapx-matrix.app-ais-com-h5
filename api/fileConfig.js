@@ -17,7 +17,7 @@ export function getFileList(params) {
 
 // 上传文件流（走https://aisfile-sit.leapmotor.com）
 export function uploadFile(data) {
-  return filePostFormData('/file/app/fileService/uploadMultipartFile', data)
+  return filePostFormData('/app/fileService/uploadMultipartFile', data)
 }
 
 // 绑定业务关系
