@@ -41,3 +41,8 @@ export function uploadFileByUrl(data) {
   return post('/file/app/fileService/uploadByUrl', data)
 }
 
+// 通过URL上传文件 新
+export function addFileByUrl(data) {
+  return post('/file/app/fileService/addByUrl', data)
+}
+
