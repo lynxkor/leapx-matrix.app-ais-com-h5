@@ -38,6 +38,5 @@ export function deleteAttachmentConfig(data) {
 }
 // 通过URL上传文件
 export function uploadFileByUrl(data) {
-  return post('/file/app/fileService/uploadByUrl', data)
+  return post('/file/app/fileService/addByUrl', data)
 }
-
