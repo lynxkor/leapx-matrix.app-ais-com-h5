@@ -117,7 +117,7 @@ export function getOwnerTree(data) {
  * @param {Object} data
  */
 export function storePage(data) {
-  return postJson('network/app/user/store/page', data)
+  return post('/network/portal/store/page', data)
 }
 
 /**
