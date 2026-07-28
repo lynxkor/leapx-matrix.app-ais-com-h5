@@ -155,8 +155,10 @@ const getData = (isRefresh) => {
 
         emit('setData', {
           list: records,
-          // 兼容后端分页从 0 或 1 开始：第一页都需要走 isRefresh 路径（替换而非追加）
-          isRefresh: current <= 1
+          // 用入参 isRefresh 判断"是否走替换路径"，而不是用响应的 current。
+          // 之前用 current <= 1 在 current=0 的接口下永远为 true，导致每页都"替换"dataList，
+          // 上拉加载的页永远被丢掉，列表一直只有 10 条，触发无限上拉请求。
+          isRefresh: !!isRefresh
         })
 
         // 判断是否加载完毕
@@ -165,9 +167,12 @@ const getData = (isRefresh) => {
           finished.value = true
         } else if (
           records.length === 0 ||
-          current * (data.pageSize || searchParams.pageSize) >= total
+          // 当前页返回的记录数 < 请求的 pageSize：服务端无法再返回更多，必然是最后一页
+          // 这是兜底逻辑：避免后端 pageSize 字段为 0 或不返回时导致分页计算失败、finished 永远 false
+          records.length < searchParams.pageSize ||
+          // 已加载条目数 >= 总数（仅在 data.pageSize 可信时使用）
+          (data.pageSize > 0 && (current + 1) * data.pageSize >= total)
         ) {
-          // 分页接口，判断是否还有更多数据
           finished.value = true
         } else {
           searchParams.pageNum = searchParams.pageNum + 1
