@@ -155,7 +155,8 @@ const getData = (isRefresh) => {
 
         emit('setData', {
           list: records,
-          isRefresh: current === 1
+          // 兼容后端分页从 0 或 1 开始：第一页都需要走 isRefresh 路径（替换而非追加）
+          isRefresh: current <= 1
         })
 
         // 判断是否加载完毕
