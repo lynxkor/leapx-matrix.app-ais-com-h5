@@ -11,8 +11,9 @@
             <span v-html="globalStore.title"></span>
           </div>
         </template>
-        <template #right v-if="route.path === '/deliveryAssignment/list'">
-          <div @click="goDispatch">自动分派设置</div>
+        <template #right>
+          <!-- 子应用通过<Teleport to="#header-right-portal" defer>xxx</Teleport>形式插入 -->
+          <div id="header-right-portal"></div>
         </template>
       </van-nav-bar>
     </header>
@@ -115,16 +116,6 @@ const keepAliveRouteNames = computed(() => {
     .filter((route) => route.meta?.keepAlive && route.name)
     .map((route) => route.name)
 })
-// const keepAliveRouteNames = ['PdiListView']
-console.log('keep', keepAliveRouteNames, route)
-const goDispatch = () => {
-  router.push({
-    path: '/autoDispatchSetting/index'
-    // query: {
-    //   id: 'asd14a56s4d56as',
-    // },
-  })
-}
 </script>
 
 <style lang="scss" scoped>
