@@ -146,3 +146,8 @@ export function getMaintainEnum(code) {
 export function getEnumValue(prefix) {
   return post(`maintain/app/common/enum/${prefix}`)
 }
+
+// 查询地区树
+export function getAreaTree() {
+  return get('/area/tree')
+}
