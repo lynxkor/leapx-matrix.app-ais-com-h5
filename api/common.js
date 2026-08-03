@@ -149,5 +149,5 @@ export function getEnumValue(prefix) {
 
 // 查询地区树
 export function getAreaTree() {
-  return get('/area/tree')
+  return get('/leapx/area/tree')
 }
