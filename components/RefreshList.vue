@@ -171,7 +171,7 @@ const getData = (isRefresh) => {
           // 这是兜底逻辑：避免后端 pageSize 字段为 0 或不返回时导致分页计算失败、finished 永远 false
           records.length < searchParams.pageSize ||
           // 已加载条目数 >= 总数（仅在 data.pageSize 可信时使用）
-          (data.pageSize > 0 && (current + 1) * data.pageSize >= total)
+          (data.pageSize > 0 && current * data.pageSize >= total)
         ) {
           finished.value = true
         } else {
