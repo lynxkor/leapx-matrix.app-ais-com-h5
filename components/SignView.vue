@@ -246,8 +246,25 @@ const submit = async() => {
       if (props.submitting) {
         return
       }
+      // 逆时针旋转90°后导出图片（不影响canvas本身显示）
+      let rotatedDataURL = ''
+      const srcCanvas = myCanvas.value
+      if (srcCanvas) {
+        const tmp = document.createElement('canvas')
+        const w = srcCanvas.width
+        const h = srcCanvas.height
+        // 旋转后宽高互换
+        tmp.width = h
+        tmp.height = w
+        const tctx = tmp.getContext('2d')
+        tctx.translate(0, w) // 平移到左下角
+        tctx.rotate(-Math.PI / 2) // 逆时针旋转90°
+        tctx.drawImage(srcCanvas, 0, 0) // 绘制原图
+        rotatedDataURL = tmp.toDataURL('image/png')
+      }
+
       emit('submit', {
-        signatureImageData: myCanvas.value?.toDataURL('image/png') || '',
+        signatureImageData: rotatedDataURL,
         points: [...points.value]
       })
     })
