@@ -2,14 +2,15 @@ import { getNavigatorType } from './index'
 import { NAVIGATOR_TYPE_ANDROID, NAVIGATOR_TYPE_IOS } from './constants'
 const navigatorType = getNavigatorType()
 
-export function toScan() {
-  // 1vin码 2钥匙 3合格证
+export function toScan(types = [1, 2, 3]) {
+  // 1-vin码 2-钥匙 3-合格证 4-任意二维码
   // 跳转扫码
+  const typeArr = Array.isArray(types) ? types : [types]
   if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
-    window.Android.toScan('[1,2,3]', true)
+    window.Android.toScan(JSON.stringify(typeArr), true)
   } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
     window.webkit.messageHandlers.toScan.postMessage({
-      type: [1, 2, 3],
+      type: typeArr,
       isBack: true
     })
   }
