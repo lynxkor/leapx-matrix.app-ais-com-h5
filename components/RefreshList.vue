@@ -91,6 +91,8 @@ const searchParams = reactive({})
 const isFetch = ref(false)
 // 刷新 loading 态
 const isLoading = ref(false)
+// 请求序号：仅最新一次请求的响应生效，防止慢响应把旧数据渲染到新 tab/新筛选下
+let requestSeq = 0
 
 const onRefresh = () => {
   finished.value = false
@@ -114,10 +116,11 @@ const onLoad = () => {
 }
 
 const getData = (isRefresh) => {
-  // 如果正在请求中，不重复请求
-  if (isFetch.value) {
+  // 上拉加载：已有请求在途时不重复请求；刷新（切tab/下拉/重置）始终放行，由请求序号丢弃过期响应
+  if (!isRefresh && isFetch.value) {
     return
   }
+  const seq = ++requestSeq
   if (isRefresh) {
     searchParams.pageNum = 1
     isLoading.value = true
@@ -127,6 +130,10 @@ const getData = (isRefresh) => {
   props.requestData
     .api(searchParams)
     .then((res) => {
+      // 已被更新的刷新/筛选取代，丢弃过期响应
+      if (seq !== requestSeq) {
+        return
+      }
       console.log('res', res)
       if (res.code === 200) {
         const data = res.data
@@ -190,6 +197,9 @@ const getData = (isRefresh) => {
       }
     })
     .catch((err) => {
+      if (seq !== requestSeq) {
+        return
+      }
       loading.value = false
       refreshing.value = false
       isFetch.value = false
@@ -200,6 +210,9 @@ const getData = (isRefresh) => {
       emit('setData', { list: [], isRefresh: true })
     })
     .finally(() => {
+      if (seq !== requestSeq) {
+        return
+      }
       loading.value = false
       refreshing.value = false
       isFetch.value = false
