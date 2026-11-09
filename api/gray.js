@@ -5,5 +5,5 @@ import { get } from './request.js'
  * 返回 data: { [featureCode]: boolean }，key 为灰度平台的功能编码
  */
 export function getGrayFlags() {
-  return get('/hub/gray/flags')
+  return get('/hub/app/gray/flags')
 }
