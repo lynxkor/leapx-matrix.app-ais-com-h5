@@ -19,8 +19,7 @@ const AIS_PREFIXES = [
   '/vr/',
   '/vw/',
   '/datareport/',
-  '/file/',
-  '/hub/'
+  '/file/'
 ]
 
 function resolveBaseURL(url, sign) {
