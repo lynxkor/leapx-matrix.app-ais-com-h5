@@ -53,3 +53,18 @@ export function batchUploadImageLimit(limitSize, maxNum, hasUploadNumber = 1) {
     window.webkit.messageHandlers.batchUploadImage.postMessage(JSON.stringify(params))
   }
 }
+
+// 通用附件上传（图片/视频/文件均可，大小限制 MB 由 H5 下发，如 { imgSize: 50, videoSize: 50, fileSize: 50 }）
+// 原生选完并上传后回调 window.getUploadFileReturnObj(JSON串)：
+// { attachmentName, attachmentType, attachmentUrl }，attachmentUrl 为域名后的路径（不含域名）
+export function getUploadFile(sizeLimit) {
+  const jsonString = typeof sizeLimit === 'string' ? sizeLimit : JSON.stringify(sizeLimit)
+  if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
+    // 兼容两种挂载方式：window.Android.getUploadFile / 全局 window.getUploadFile
+    const bridge = (window.Android && typeof window.Android.getUploadFile === 'function' && window.Android.getUploadFile) ||
+      (typeof window.getUploadFile === 'function' && window.getUploadFile)
+    if (bridge) bridge(jsonString)
+  } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
+    window.webkit?.messageHandlers?.getUploadFile?.postMessage(jsonString)
+  }
+}
