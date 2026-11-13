@@ -60,10 +60,14 @@ export function batchUploadImageLimit(limitSize, maxNum, hasUploadNumber = 1) {
 export function getUploadFile(sizeLimit) {
   const jsonString = typeof sizeLimit === 'string' ? sizeLimit : JSON.stringify(sizeLimit)
   if (navigatorType === NAVIGATOR_TYPE_ANDROID) {
-    // 兼容两种挂载方式：window.Android.getUploadFile / 全局 window.getUploadFile
-    const bridge = (window.Android && typeof window.Android.getUploadFile === 'function' && window.Android.getUploadFile) ||
-      (typeof window.getUploadFile === 'function' && window.getUploadFile)
-    if (bridge) bridge(jsonString)
+    // 兼容两种挂载方式：window.Android.getUploadFile / 全局 window.getUploadFile。
+    // 注意：Java Bridge 方法必须以注入对象为 receiver 直接调用，
+    // 不能取出方法引用再调用（ detached 调用会报 non-injected object 错误）
+    if (window.Android && typeof window.Android.getUploadFile === 'function') {
+      window.Android.getUploadFile(jsonString)
+    } else if (typeof window.getUploadFile === 'function') {
+      window.getUploadFile(jsonString)
+    }
   } else if (navigatorType === NAVIGATOR_TYPE_IOS) {
     window.webkit?.messageHandlers?.getUploadFile?.postMessage(jsonString)
   }
